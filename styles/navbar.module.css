@@ -3,6 +3,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px 40px;
+  border-bottom: 3px solid #b1b1b1;
 }
 
 .logo {
@@ -39,5 +40,5 @@
   left: 1.2rem;
   right: 1.2rem;
   bottom: -0.4rem;
-  border-bottom: 3px solid #b1b1b1; /* Cambia esto al color que prefieras */
+  border-bottom: 3px solid #b1b1b1;
 }
