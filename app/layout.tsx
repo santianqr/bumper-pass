@@ -1,8 +1,18 @@
 import type { Metadata } from "next";
-import { Maven_Pro } from 'next/font/google'
+import { Maven_Pro } from "next/font/google";
+import { Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 
-const maven_pro = Maven_Pro({ subsets: ['latin'] })
+const maven_pro = Maven_Pro({
+  subsets: ["latin"],
+  variable: "--font-maven-pro",
+  display: "swap",
+});
+const source_serif = Source_Serif_4({
+  subsets: ["latin"],
+  variable: "--font-source-serif",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Bumper Pass",
@@ -15,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={maven_pro.className}>
+    <html lang="en" className={`${maven_pro.variable} ${source_serif.variable}`}>
       <body>{children}</body>
     </html>
   );
