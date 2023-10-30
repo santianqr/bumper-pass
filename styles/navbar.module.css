@@ -6,13 +6,8 @@
   font-family: var(--font-maven-pro);
 }
 
-.logo {
-}
-
 .navbar{
   display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .listbuttons {

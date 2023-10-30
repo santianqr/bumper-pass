@@ -3,7 +3,11 @@ import styles from "@/styles/sign-up.module.css";
 import Image from "next/image";
 import hands from "@/public/hands.webp";
 
-export default function SignInForm() {
+const SignInForm = () => {
+  const renderInput = (type: string, placeholder: string) => (
+    <input type={type} placeholder={placeholder} />
+  );
+
   return (
     <div className={styles.container}>
       <form className={styles.form}>
@@ -11,8 +15,8 @@ export default function SignInForm() {
         <p className={styles.p1}>
           To start, you must log in with your username and password
         </p>
-        <input type="email" placeholder="Enter your email address" />
-        <input type="password" placeholder="Enter your password" />
+        {renderInput("email", "Enter your email address")}
+        {renderInput("password", "Enter your password")}
 
         <div className={styles.container1}>
           <div>
@@ -36,4 +40,6 @@ export default function SignInForm() {
       </form>
     </div>
   );
-}
+};
+
+export default SignInForm;
