@@ -47,3 +47,24 @@
   transition: 0.5s;
   font-family: var(--font-maven-pro);
 }
+
+.platesContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.plate {
+  position: relative;
+  width: 200px;
+  height: 100px;
+  font-family: var(--font-source-serif);
+  font-weight: bold;
+}
+
+.plateText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #000;
+}
