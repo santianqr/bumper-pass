@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-
 import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
+import puppeteer from "puppeteer";
 
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { PromptTemplate } from "langchain/prompts";
@@ -9,11 +9,14 @@ import { JsonOutputFunctionsParser } from "langchain/output_parsers";
 
 export const runtime = "edge";
 
-const TEMPLATE = `Given the user interests and preferences, generate 10 unique and personalized license plate suggestions for California, USA. The license plate should reflect the user input and adhere to the following guidelines:
+
+const plates = 0;
+
+const TEMPLATE = `Given the user interests and preferences, generate ${plates} unique and personalized license plate suggestions for California, USA. The license plate should reflect the user input and adhere to the following guidelines:
 
 Include a combination of numbers (1-9), letters, or both, and spaces.
 Do not use special or accented characters.
-Have a minimum of 2 characters and a maximum of 7 characters.
+Have a minimum of 2 characters and a maximum of JUST 7 characters must be used.
 Should not carry connotations offensive to good taste and decency, or be misleading.
 Avoid configurations that could be confused with existing license plates.
 The goal is to create license plates that are unique, meaningful, and adhere to the regulations set by the California Department of Motor Vehicles. Remember, these are just suggestions. The user is free to create their own personalized license plate that best represents them."
@@ -23,7 +26,6 @@ Please provide the user interests and preferences as input to the model. Based o
 Input:
 
 {input}`;
-
 /**
  * This handler initializes and calls an OpenAI Functions powered
  * structured output chain. See the docs for more information:
@@ -42,7 +44,7 @@ export async function POST(req: NextRequest) {
      * Function calling is currently only supported with ChatOpenAI models.
      */
     const model = new ChatOpenAI({
-      openAIApiKey: "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",
+      openAIApiKey: "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",
       temperature: 0.2,
       //modelName: "gpt-3.5-turbo",
       modelName: "gpt-4",
@@ -93,7 +95,31 @@ export async function POST(req: NextRequest) {
       .pipe(new JsonOutputFunctionsParser());
 
     const result = await chain.invoke({ input: currenMessageContent });
-    console.log(currenMessageContent);
+
+    const resultString = JSON.stringify(result);
+    const obj = JSON.parse(resultString);
+
+    const plates = obj["plates"];
+    const uniquePlates = Array.from(new Set(plates));
+
+    if (uniquePlates.length === plates.length) {
+      console.log("Todos los elementos son únicos");
+      console.log(uniquePlates.length);
+    } else {
+      console.log("Hay elementos duplicados");
+    }
+
+    console.log(plates[0]);
+
+    const response = await fetch("http://localhost:3000/api/search", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ plates: plates[0] }),
+    });
+    console.log(response.ok);
+
     return NextResponse.json(result, { status: 200 });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
