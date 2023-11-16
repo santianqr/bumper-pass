@@ -9,7 +9,7 @@ const NAV_ITEMS = ["Search Now!", "About Us", "Services", "Contact"];
 
 export default function Navbar() {
   const [selectedButton, setSelectedButton] = useState<number | null>(null);
-
+  
   const renderNavItem = (text: string, index: number) => (
     <li key={index}>
       <div

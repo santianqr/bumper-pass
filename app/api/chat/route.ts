@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
-import puppeteer from "puppeteer";
 
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { PromptTemplate } from "langchain/prompts";
@@ -9,71 +8,54 @@ import { JsonOutputFunctionsParser } from "langchain/output_parsers";
 
 export const runtime = "edge";
 
+const TEMPLATE = `Generate 10 unique license plate suggestions for California, USA. The user preferences are: {input} and you have to follow them. If the user wants only letters, only numbers or mixed or wants a specific number of characters or any number of characters, you must follow their guidelines. You must extract the user's personal preference and use all the data you have in your model related to the topic the user wants. Be creative and don't limit yourself but always follow the following basic rules and user input.
 
-const plates = 0;
-
-const TEMPLATE = `Given the user interests and preferences, generate ${plates} unique and personalized license plate suggestions for California, USA. The license plate should reflect the user input and adhere to the following guidelines:
-
-Include a combination of numbers (1-9), letters, or both, and spaces.
+Have a minimum of 3 characters and a maximum of 7 characters.
 Do not use special or accented characters.
-Have a minimum of 2 characters and a maximum of JUST 7 characters must be used.
-Should not carry connotations offensive to good taste and decency, or be misleading.
-Avoid configurations that could be confused with existing license plates.
-The goal is to create license plates that are unique, meaningful, and adhere to the regulations set by the California Department of Motor Vehicles. Remember, these are just suggestions. The user is free to create their own personalized license plate that best represents them."
+Follow the DMV rules.
 
-Please provide the user interests and preferences as input to the model. Based on this input, the model should generate 10 recommendations for license plates with 7, 6, and 5 characters. The generated license plates should be creative, unique, and reflect the user input. Remember to ensure that the generated suggestions adhere to the guidelines provided.
+`;
+{
+  /*const TEMPLATE = `Generate 10 unique license plate suggestions for California, USA. You have take into account the following basic rules and DMV rules. But your responses must to follow the user preferences, if they prefer only numbers, letters or mixed and the number of characters. It is a priority.
+Have a minimum of 3 characters and a maximum of 7 characters.
+Do not use special or accented characters.
+Please be very creative and use all data about that you have related to the information provided by the user to generate the best possible personalized license plate suggestions. If the user mentions a specific topic, use all the data for your suggestions.
+Its very important if the user writes he/she wants only numbers, letters or mixed, you have to follow that rule. Same with the number of characters.
+You must validate if each suggestion follows the user preferences and the DMV rules. 
 
-Input:
-
-{input}`;
-/**
- * This handler initializes and calls an OpenAI Functions powered
- * structured output chain. See the docs for more information:
- *
- * https://js.langchain.com/docs/modules/chains/popular/structured_output
- */
-
+Input: {input}`;
+*/
+}
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const messages = body.messages ?? "hola";
-    const currenMessageContent = messages[messages.length - 1]?.content;
+    const messages = body.messages ?? [];
+
+    const userInput = `${
+      messages[messages.length - 2].content
+    }. my preferences are: ${messages[messages.length - 1].content}`;
 
     const prompt = PromptTemplate.fromTemplate<{ input: string }>(TEMPLATE);
-    /**
-     * Function calling is currently only supported with ChatOpenAI models.
-     */
+
     const model = new ChatOpenAI({
-      openAIApiKey: "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",
-      temperature: 0.2,
+      openAIApiKey: process.env.OPENAI_API_KEY,
+      temperature: 0.6,
       //modelName: "gpt-3.5-turbo",
       modelName: "gpt-4",
-      topP: 0.5,
-      frequencyPenalty: 0.2,
-      presencePenalty: 1,
+      topP: 0.9,
+      frequencyPenalty: 0.5,
+      presencePenalty: 0.6,
     });
 
-    /**
-     * We use Zod (https://zod.dev) to define our schema for convenience,
-     * but you can pass JSON Schema directly if desired.
-     */
     const schema = z.object({
       plates: z
-        .array(z.string().max(7))
+        .array(z.string().max(7).min(3))
         .min(10)
         .max(10)
         .describe(
-          "The array of 10 personalized plates following strictly DMV rules."
+          "The array of 10 personalized plates following the guidelines."
         ),
     });
-
-    /**
-     * Bind the function and schema to the OpenAI model.
-     * Future invocations of the returned model will always use these arguments.
-     *
-     * Specifying "function_call" ensures that the provided function will always
-     * be called by the model.
-     */
 
     const functionCallingModel = model.bind({
       functions: [
@@ -86,40 +68,12 @@ export async function POST(req: NextRequest) {
       function_call: { name: "output_formatter" },
     });
 
-    /**
-     * Returns a chain with the function calling model.
-     */
-
     const chain = prompt
       .pipe(functionCallingModel)
       .pipe(new JsonOutputFunctionsParser());
 
-    const result = await chain.invoke({ input: currenMessageContent });
-
-    const resultString = JSON.stringify(result);
-    const obj = JSON.parse(resultString);
-
-    const plates = obj["plates"];
-    const uniquePlates = Array.from(new Set(plates));
-
-    if (uniquePlates.length === plates.length) {
-      console.log("Todos los elementos son únicos");
-      console.log(uniquePlates.length);
-    } else {
-      console.log("Hay elementos duplicados");
-    }
-
-    console.log(plates[0]);
-
-    const response = await fetch("http://localhost:3000/api/search", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ plates: plates[0] }),
-    });
-    console.log(response.ok);
-
+    const result = await chain.invoke({ input: userInput });
+    console.log(result);
     return NextResponse.json(result, { status: 200 });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
