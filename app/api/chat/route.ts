@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
     const model = new ChatOpenAI({
       openAIApiKey: process.env.OPENAI_API_KEY,
       temperature: 0.1,
-      modelName: "gpt-4",
+      modelName: "gpt-4-1106-preview",
     });
 
     const schema = z.object({
@@ -79,19 +79,7 @@ export async function POST(req: NextRequest) {
 
     if ("plates" in result) {
       const plates = result.plates as string[];
-      const response = await fetch("http://localhost:3000/api/search", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          vehicleType: "auto",
-          personalizedPlate: "THOR5",
-        }),
-      });
-      console.log(response);
-      {
-        /*
+
       // Usar un bucle for...of
       for (const plate of plates) {
         const response = await fetch("http://localhost:3000/api/search", {
@@ -99,12 +87,15 @@ export async function POST(req: NextRequest) {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ plates: plate, vehicleType: "auto" }),
+          body: JSON.stringify({
+            personalizedPlate: plate,
+            vehicleType: "auto",
+          }),
         });
-        console.log(typeof plate);
-        console.log(response);
-      }
-      */
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data.message); // Imprime "OK" o "NO"
+        }
       }
     }
 

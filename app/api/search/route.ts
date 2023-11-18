@@ -14,8 +14,8 @@ const replaceSymbols = (text: string) => {
 export const POST = async (request: Request) => {
   try {
     const body = await request.json();
-    const browser = await puppeteer.launch({ headless: false, slowMo: 100 });
-    //onst browser = await puppeteer.launch({ headless: "new" });
+    //const browser = await puppeteer.launch({ headless: false, slowMo: 100 });
+    const browser = await puppeteer.launch({ headless: "new" });
     const page = await browser.newPage();
     await page.goto("https://www.dmv.ca.gov/wasapp/ipp2/initPers.do");
     await page.click("input#agree");
@@ -77,16 +77,13 @@ export const POST = async (request: Request) => {
     }
     const spanText = await spanElement.getProperty("textContent");
     const text = await spanText.jsonValue();
-
+    await browser.close();
     let message = "";
     if (text === "Progress: 30%") {
-      message = "Available Plate";
+      return NextResponse.json({ message: "OK", status: 200 });
     } else {
-      message = "Unavailable Plate";
+      return NextResponse.json({ message: "NO", status: 200 });
     }
-
-    await browser.close();
-    return NextResponse.json(message, { status: 200 });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
