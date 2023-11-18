@@ -14,8 +14,8 @@ const replaceSymbols = (text: string) => {
 export const POST = async (request: Request) => {
   try {
     const body = await request.json();
-
-    const browser = await puppeteer.launch({ headless: false, slowMo: 200 });
+    const browser = await puppeteer.launch({ headless: false, slowMo: 100 });
+    //onst browser = await puppeteer.launch({ headless: "new" });
     const page = await browser.newPage();
     await page.goto("https://www.dmv.ca.gov/wasapp/ipp2/initPers.do");
     await page.click("input#agree");
@@ -35,7 +35,7 @@ export const POST = async (request: Request) => {
       "👆": "hand",
       "➕": "plus",
     };
-
+    console.log(body.personalizedPlate);
     let hasSymbol = false;
     for (const symbol of symbols) {
       if (body.personalizedPlate.includes(symbol)) {
@@ -55,8 +55,9 @@ export const POST = async (request: Request) => {
 
     await page.waitForNavigation({ waitUntil: "networkidle0" });
 
-    const modifiedPlate = replaceSymbols(body.personalizedPlate);
-    //console.log(modifiedPlate);
+    let modifiedPlate = replaceSymbols(body.personalizedPlate);
+    modifiedPlate = modifiedPlate.padEnd(7, " ");
+
     await page.type("input#plateChar0", modifiedPlate[0]);
     await page.type("input#plateChar1", modifiedPlate[1]);
     await page.type("input#plateChar2", modifiedPlate[2]);

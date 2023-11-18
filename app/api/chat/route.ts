@@ -75,6 +75,39 @@ export async function POST(req: NextRequest) {
       .pipe(new JsonOutputFunctionsParser());
 
     const result = await chain.invoke({ input: userInput });
+    console.log(result);
+
+    if ("plates" in result) {
+      const plates = result.plates as string[];
+      const response = await fetch("http://localhost:3000/api/search", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          vehicleType: "auto",
+          personalizedPlate: "THOR5",
+        }),
+      });
+      console.log(response);
+      {
+        /*
+      // Usar un bucle for...of
+      for (const plate of plates) {
+        const response = await fetch("http://localhost:3000/api/search", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ plates: plate, vehicleType: "auto" }),
+        });
+        console.log(typeof plate);
+        console.log(response);
+      }
+      */
+      }
+    }
+
     return NextResponse.json(result, { status: 200 });
   } catch (e: any) {
     console.log(e);
