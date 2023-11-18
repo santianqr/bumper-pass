@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import puppeteer from "puppeteer";
 
 const replaceSymbols = (text: string) => {
-  const symbols = ["♥️", "⭐️", "👆", "➕"];
+  //const symbols = ["♥️", "⭐️", "👆", "➕"];
+  const symbols = ["❤", "⭐", "👆", "➕"];
   let newText = text;
   for (const symbol of symbols) {
     newText = newText.replace(new RegExp(symbol, "g"), "@");
@@ -27,10 +28,10 @@ export const POST = async (request: Request) => {
     await page.type("input#last3Vin", "802");
     await page.click("label[for=isRegExpire60N]");
     await page.click("label[for=isVehLeasedN]");
-    const symbols = ["♥️", "⭐️", "👆", "➕"];
+    const symbols = ["❤", "⭐", "👆", "➕"];
     const symbolMap: { [key: string]: string } = {
-      "♥️": "heart",
-      "⭐️": "star",
+      "❤": "heart",
+      "⭐": "star",
       "👆": "hand",
       "➕": "plus",
     };

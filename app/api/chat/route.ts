@@ -8,24 +8,32 @@ import { JsonOutputFunctionsParser } from "langchain/output_parsers";
 
 export const runtime = "edge";
 
-const TEMPLATE = `Generate 10 unique license plate suggestions for California, USA. The user preferences are: {input} and you have to follow them. If the user wants only letters, only numbers or mixed or wants a specific number of characters or any number of characters, you must follow their guidelines. You must extract the user's personal preference and use all the data you have in your model related to the topic the user wants. Be creative and don't limit yourself but always follow the following basic rules and user input.
+const TEMPLATE = `Generate 10 unique license plate suggestions for California, USA. The user input has a defined format. I will give you 5 examples of user input and the expected output. 
 
-Have a minimum of 3 characters and a maximum of 7 characters.
-Do not use special or accented characters.
-Follow the DMV rules.
+User: must be plates with just 6 characters. must be just letters, no numbers. my preferences are: Vikings
+Output: must be 10 plates with 6 characters and just letters. You can use names of heroes from Norse mythology, special places like Valhalla or special events like Ragnarok.
 
-`;
-{
-  /*const TEMPLATE = `Generate 10 unique license plate suggestions for California, USA. You have take into account the following basic rules and DMV rules. But your responses must to follow the user preferences, if they prefer only numbers, letters or mixed and the number of characters. It is a priority.
-Have a minimum of 3 characters and a maximum of 7 characters.
-Do not use special or accented characters.
-Please be very creative and use all data about that you have related to the information provided by the user to generate the best possible personalized license plate suggestions. If the user mentions a specific topic, use all the data for your suggestions.
-Its very important if the user writes he/she wants only numbers, letters or mixed, you have to follow that rule. Same with the number of characters.
-You must validate if each suggestion follows the user preferences and the DMV rules. 
+User: must be plates with just 6 characters. must be just numbers, no letters. my preferences are: friends the tv show
+Output: must be 10 plates with 6 characters and just numbers. So you can use special dates, numbers of apartments, doors, special events or special dates like birthday of the characters, etc.
 
-Input: {input}`;
-*/
-}
+User: must be plates with just 5 characters. must be just letters, no numbers. my preferences are: I like Starwars
+Output: must be 10 plates with 5 characters and just letters. You can use names of characters, events, places that are in Star Wars.
+
+User: must be plates with just 4 characters. must be just numbers, no letters. my preferences are: All apple environment
+Output: must be 10 plates with 4 characters and just numbers. You can use special dates, numbers that are related to Apple, etc.
+
+User: must be plates with just any number of characters between 3 and 7 characters. use numbers and letters. my preferences are: I have a dog called Lara, she is a yellow labrador
+Output: in this case the user is not giving you any specific information about the number of characters either if he/she wants numbers, letters. So you can any special number about the labrators, the name of the dog. 
+
+The most important thing is that you understand that you can use information related to the user's preference to generate the suggestions. Don't limit yourself
+
+Follow the basic guidelines:
+Follow DMV rules.
+Do not use special characters or accents.
+
+Input: 
+{input}`;
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -39,12 +47,8 @@ export async function POST(req: NextRequest) {
 
     const model = new ChatOpenAI({
       openAIApiKey: process.env.OPENAI_API_KEY,
-      temperature: 0.6,
-      //modelName: "gpt-3.5-turbo",
+      temperature: 0.1,
       modelName: "gpt-4",
-      topP: 0.9,
-      frequencyPenalty: 0.5,
-      presencePenalty: 0.6,
     });
 
     const schema = z.object({
@@ -52,9 +56,7 @@ export async function POST(req: NextRequest) {
         .array(z.string().max(7).min(3))
         .min(10)
         .max(10)
-        .describe(
-          "The array of 10 personalized plates following the guidelines."
-        ),
+        .describe("The array of 10 personalized plates."),
     });
 
     const functionCallingModel = model.bind({
@@ -73,9 +75,9 @@ export async function POST(req: NextRequest) {
       .pipe(new JsonOutputFunctionsParser());
 
     const result = await chain.invoke({ input: userInput });
-    console.log(result);
     return NextResponse.json(result, { status: 200 });
   } catch (e: any) {
+    console.log(e);
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }

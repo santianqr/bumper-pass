@@ -27,7 +27,7 @@ export default function VGPage() {
         } characters. ${
           charType !== ""
             ? `must be just ${charType}, no ${charType2}`
-            : "please use numbers and letters"
+            : "use numbers and letters"
         }`,
       },
     ],
