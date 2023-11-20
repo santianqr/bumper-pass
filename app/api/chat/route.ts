@@ -30,7 +30,7 @@ async function validatePlates(
 
   const validPlates: string[] = [];
   for (const plate of plates) {
-    if (regex.test(plate)) {
+    if (regex.test(plate) && !plate.includes("0")) {
       validPlates.push(plate);
     }
   }
@@ -107,7 +107,8 @@ export async function POST(req: NextRequest) {
 
       Follow the basic guidelines:
       Follow DMV rules.
-      Do not use special characters or accents.
+      Use numbers between 1 and 9. The 0 is not allowed.
+      Special or accented characters are not accepted.
 
       Input: 
       {input}`;

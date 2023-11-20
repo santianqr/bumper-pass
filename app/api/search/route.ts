@@ -14,8 +14,8 @@ const replaceSymbols = (text: string) => {
 export const POST = async (request: Request) => {
   try {
     const body = await request.json();
-    //const browser = await puppeteer.launch({ headless: false, slowMo: 100 });
-    const browser = await puppeteer.launch({ headless: "new" });
+    const browser = await puppeteer.launch({ headless: false, slowMo: 50 });
+    //const browser = await puppeteer.launch({ headless: "new" });
     const page = await browser.newPage();
     await page.goto("https://www.dmv.ca.gov/wasapp/ipp2/initPers.do");
     await page.click("input#agree");
@@ -72,17 +72,17 @@ export const POST = async (request: Request) => {
     await page.waitForNavigation({ waitUntil: "networkidle0" });
     const spanElement = await page.$(".progress__tooltip");
     if (spanElement === null) {
-      console.log("Didnt find any span element");
-      return;
-    }
-    const spanText = await spanElement.getProperty("textContent");
-    const text = await spanText.jsonValue();
-    await browser.close();
-    let message = "";
-    if (text === "Progress: 30%") {
-      return NextResponse.json({ message: "OK", status: 200 });
-    } else {
+      await browser.close();
       return NextResponse.json({ message: "NO", status: 200 });
+    } else {
+      const spanText = await spanElement.getProperty("textContent");
+      const text = await spanText.jsonValue();
+      await browser.close();
+      if (text === "Progress: 30%") {
+        return NextResponse.json({ message: "OK", status: 200 });
+      } else {
+        return NextResponse.json({ message: "NO", status: 200 });
+      }
     }
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
