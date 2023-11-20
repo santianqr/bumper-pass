@@ -65,7 +65,7 @@ export default function VGPage() {
         <button type="submit">Send</button>
       </form>
       {JSON.stringify(messages)}
-      {/* <div className={styles.platesContainer}>
+      <div className={styles.platesContainer}>
         {messages.map((message) => {
           if (message.role === "assistant") {
             const content = JSON.parse(message.content);
@@ -78,9 +78,7 @@ export default function VGPage() {
           }
           return null;
         })}
-        JSON.stringify(messages)
       </div>
-      */}
     </div>
   );
 }

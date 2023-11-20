@@ -8,32 +8,6 @@ import { JsonOutputFunctionsParser } from "langchain/output_parsers";
 
 export const runtime = "edge";
 
-const TEMPLATE = `Generate 10 unique license plate suggestions for California, USA. The user input has a defined format. I will give you 5 examples of user input and the expected output. 
-
-User: must be plates with just 6 characters. must be just letters, no numbers. my preferences are: Vikings
-Output: must be 10 plates with 6 characters and just letters. You can use names of heroes from Norse mythology, special places like Valhalla or special events like Ragnarok.
-
-User: must be plates with just 6 characters. must be just numbers, no letters. my preferences are: friends the tv show
-Output: must be 10 plates with 6 characters and just numbers. So you can use special dates, numbers of apartments, doors, special events or special dates like birthday of the characters, etc.
-
-User: must be plates with just 5 characters. must be just letters, no numbers. my preferences are: I like Starwars
-Output: must be 10 plates with 5 characters and just letters. You can use names of characters, events, places that are in Star Wars.
-
-User: must be plates with just 4 characters. must be just numbers, no letters. my preferences are: All apple environment
-Output: must be 10 plates with 4 characters and just numbers. You can use special dates, numbers that are related to Apple, etc.
-
-User: must be plates with just any number of characters between 3 and 7 characters. use numbers and letters. my preferences are: I have a dog called Lara, she is a yellow labrador
-Output: in this case the user is not giving you any specific information about the number of characters either if he/she wants numbers, letters. So you can any special number about the labrators, the name of the dog. 
-
-The most important thing is that you understand that you can use information related to the user's preference to generate the suggestions. Don't limit yourself
-
-Follow the basic guidelines:
-Follow DMV rules.
-Do not use special characters or accents.
-
-Input: 
-{input}`;
-
 async function validatePlates(
   userInput: string,
   plates: string[]
@@ -57,29 +31,31 @@ async function validatePlates(
   const validPlates: string[] = [];
   for (const plate of plates) {
     if (regex.test(plate)) {
-      const response: Response = await fetch(
-        "http://localhost:3000/api/search",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            personalizedPlate: plate,
-            vehicleType: "auto",
-          }),
-        }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        if (data.message === "OK") {
-          validPlates.push(plate);
-        }
+      validPlates.push(plate);
+    }
+  }
+
+  const apiValidPlates: string[] = [];
+  for (const plate of validPlates) {
+    const response: Response = await fetch("http://localhost:3000/api/search", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        personalizedPlate: plate,
+        vehicleType: "auto",
+      }),
+    });
+    if (response.ok) {
+      const data = await response.json();
+      if (data.message === "OK") {
+        apiValidPlates.push(plate);
       }
     }
   }
 
-  return validPlates;
+  return apiValidPlates;
 }
 
 type Result = {
@@ -95,36 +71,39 @@ export async function POST(req: NextRequest) {
       messages[messages.length - 2].content
     }. my preferences are: ${messages[messages.length - 1].content}`;
 
+    console.log("User input:", userInput);
+
     const model = new ChatOpenAI({
       openAIApiKey: process.env.OPENAI_API_KEY,
       temperature: 0.1,
       modelName: "gpt-4-1106-preview",
     });
 
-    let allPlates: string[] = [];
+    let validPlates: string[] = [];
+    let allGeneratedPlates: string[] = [];
     let numPlates = 10;
 
-    while (allPlates.length < 10) {
-      const TEMPLATE = `Generate ${numPlates} unique license plate suggestions for California, USA. Do not take into account recommendations such as  ${allPlates.join(
+    while (validPlates.length < 10) {
+      const TEMPLATE = `Generate ${numPlates} unique license plate suggestions for California, USA. Do not take into account recommendations such as  ${allGeneratedPlates.join(
         ", "
-      )}.The user input has a defined format. I will give you 5 examples of user input and the expected output. 
+      )}.The user input has a defined format and I will give you 5 examples of user input and the expected output. 
 
       User: must be plates with just 6 characters. must be just letters, no numbers. my preferences are: Vikings
-      Output: must be 10 plates with 6 characters and just letters. You can use names of heroes from Norse mythology, special places like Valhalla or special events like Ragnarok.
+      Output: must be ${numPlates} plates with 6 characters and just letters. You can use names of heroes from Norse mythology, special places like Valhalla or special events like Ragnarok.
 
       User: must be plates with just 6 characters. must be just numbers, no letters. my preferences are: friends the tv show
-      Output: must be 10 plates with 6 characters and just numbers. So you can use special dates, numbers of apartments, doors, special events or special dates like birthday of the characters, etc.
+      Output: must be ${numPlates} plates with 6 characters and just numbers. So you can use special dates, numbers of apartments, doors, special events or special dates like birthday of the characters, etc.
 
       User: must be plates with just 5 characters. must be just letters, no numbers. my preferences are: I like Starwars
-      Output: must be 10 plates with 5 characters and just letters. You can use names of characters, events, places that are in Star Wars.
+      Output: must be ${numPlates} plates with 5 characters and just letters. You can use names of characters, events, places that are in Star Wars.
 
       User: must be plates with just 4 characters. must be just numbers, no letters. my preferences are: All apple environment
-      Output: must be 10 plates with 4 characters and just numbers. You can use special dates, numbers that are related to Apple, etc.
+      Output: must be ${numPlates} plates with 4 characters and just numbers. You can use special dates, numbers that are related to Apple, etc.
 
       User: must be plates with just any number of characters between 3 and 7 characters. use numbers and letters. my preferences are: I have a dog called Lara, she is a yellow labrador
       Output: in this case the user is not giving you any specific information about the number of characters either if he/she wants numbers, letters. So you can any special number about the labrators, the name of the dog. 
 
-      The most important thing is that you understand that you can use information related to the user's preference to generate the suggestions. Don't limit yourself
+      The most important thing is that you understand that you can use information related to the user's preference to generate the suggestions. Don't limit yourself.
 
       Follow the basic guidelines:
       Follow DMV rules.
@@ -132,6 +111,8 @@ export async function POST(req: NextRequest) {
 
       Input: 
       {input}`;
+
+      console.log("Template:", TEMPLATE);
 
       const prompt = PromptTemplate.fromTemplate<{ input: string }>(TEMPLATE);
 
@@ -159,16 +140,29 @@ export async function POST(req: NextRequest) {
         .pipe(new JsonOutputFunctionsParser());
 
       const result = (await chain.invoke({ input: userInput })) as Result;
-      const validPlates = await validatePlates(
-        userInput,
-        result.plates as string[]
+      console.log("Generated plates:", result.plates);
+
+      const newGeneratedPlates = result.plates.filter(
+        (plate) => !allGeneratedPlates.includes(plate)
       );
-      allPlates = [...allPlates, ...validPlates];
-      numPlates = 10 - allPlates.length;
+      allGeneratedPlates = [...allGeneratedPlates, ...newGeneratedPlates];
+      console.log("All generated plates:", allGeneratedPlates);
+
+      const newValidPlates = await validatePlates(
+        userInput,
+        newGeneratedPlates
+      );
+      console.log("New valid plates:", newValidPlates);
+
+      validPlates = [...validPlates, ...newValidPlates];
+      console.log("All valid plates:", validPlates);
+
+      numPlates = 10 - validPlates.length;
+      console.log("Number of plates needed:", numPlates);
     }
 
     return NextResponse.json(
-      { plates: allPlates.slice(0, 10) },
+      { plates: validPlates.slice(0, 10) },
       { status: 200 }
     );
   } catch (e: any) {
