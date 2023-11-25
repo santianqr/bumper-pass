@@ -1,11 +1,16 @@
 import { NextResponse } from "next/server";
 import puppeteer from "puppeteer";
 
+const symbolMap: { [key: string]: string } = {
+  "❤": "heart",
+  "⭐": "star",
+  "👆": "hand",
+  "➕": "plus",
+};
+
 const replaceSymbols = (text: string) => {
-  //const symbols = ["♥️", "⭐️", "👆", "➕"];
-  const symbols = ["❤", "⭐", "👆", "➕"];
   let newText = text;
-  for (const symbol of symbols) {
+  for (const symbol in symbolMap) {
     newText = newText.replace(new RegExp(symbol, "g"), "@");
   }
   return newText;
@@ -14,8 +19,8 @@ const replaceSymbols = (text: string) => {
 export const POST = async (request: Request) => {
   try {
     const body = await request.json();
-    const browser = await puppeteer.launch({ headless: false, slowMo: 50 });
-    //const browser = await puppeteer.launch({ headless: "new" });
+    // browser = await puppeteer.launch({ headless: false, slowMo: 50 });
+    const browser = await puppeteer.launch({ headless: "new" });
     const page = await browser.newPage();
     await page.goto("https://www.dmv.ca.gov/wasapp/ipp2/initPers.do");
     await page.click("input#agree");

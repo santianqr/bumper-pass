@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
-
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { PromptTemplate } from "langchain/prompts";
 import { JsonOutputFunctionsParser } from "langchain/output_parsers";
@@ -13,7 +12,7 @@ async function validatePlates(
   plates: string[]
 ): Promise<string[]> {
   const rules = userInput.split(". ");
-  let regex = /^[\w\d]{3,7}$/;
+  let regex: RegExp = /^[\w\d]{3,7}$/;
 
   for (const rule of rules) {
     if (rule.startsWith("must be plates with just")) {
@@ -25,6 +24,13 @@ async function validatePlates(
       regex = /^[a-zA-Z]{3,7}$/;
     } else if (rule === "must be just numbers, no letters") {
       regex = /^\d{3,7}$/;
+    } else if (rule.startsWith("any number of characters between")) {
+      const countMatch = rule.match(/(\d+)/g);
+      if (countMatch && countMatch.length === 2) {
+        regex = new RegExp(`^[\\w\\d]{${countMatch[0]},${countMatch[1]}}$`);
+      }
+    } else if (rule === "use numbers and letters") {
+      regex = /^[a-zA-Z0-9]{3,7}$/;
     }
   }
 
@@ -75,7 +81,7 @@ export async function POST(req: NextRequest) {
 
     const model = new ChatOpenAI({
       openAIApiKey: process.env.OPENAI_API_KEY,
-      temperature: 0.1,
+      temperature: 0.8,
       modelName: "gpt-4-1106-preview",
     });
 
@@ -113,7 +119,7 @@ export async function POST(req: NextRequest) {
       Input: 
       {input}`;
 
-      console.log("Template:", TEMPLATE);
+      //console.log("Template:", TEMPLATE);
 
       const prompt = PromptTemplate.fromTemplate<{ input: string }>(TEMPLATE);
 
