@@ -96,25 +96,22 @@ export async function POST(req: NextRequest) {
 
       User: must be plates with just 6 characters. must be just letters, no numbers. my preferences are: Vikings
       Output: must be ${numPlates} plates with 6 characters and just letters. You can use names of heroes from Norse mythology, special places like Valhalla or special events like Ragnarok.
-
       User: must be plates with just 6 characters. must be just numbers, no letters. my preferences are: friends the tv show
       Output: must be ${numPlates} plates with 6 characters and just numbers. So you can use special dates, numbers of apartments, doors, special events or special dates like birthday of the characters, etc.
-
       User: must be plates with just 5 characters. must be just letters, no numbers. my preferences are: I like Starwars
       Output: must be ${numPlates} plates with 5 characters and just letters. You can use names of characters, events, places that are in Star Wars.
-
       User: must be plates with just 4 characters. must be just numbers, no letters. my preferences are: All apple environment
       Output: must be ${numPlates} plates with 4 characters and just numbers. You can use special dates, numbers that are related to Apple, etc.
-
       User: must be plates with just any number of characters between 3 and 7 characters. use numbers and letters. my preferences are: I have a dog called Lara, she is a yellow labrador
       Output: in this case the user is not giving you any specific information about the number of characters either if he/she wants numbers, letters. So you can any special number about the labrators, the name of the dog. 
 
-      The most important thing is that you understand that you can use information related to the user's preference to generate the suggestions. Don't limit yourself.
+      The most important thing is that you understand that you can use all information related to the user's preference to generate the suggestions. It doesn't matter how many topics the user likes, you should return recommendations for everyone. Don't limit yourself.
 
       Follow the basic guidelines:
       Follow DMV rules.
       Use numbers between 1 and 9. The 0 is not allowed.
       Special or accented characters are not accepted.
+      Inappropriate words or short expressions of bad words, for example FCK, are prohibited.
 
       Input: 
       {input}`;
