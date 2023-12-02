@@ -7,36 +7,88 @@ import { JsonOutputFunctionsParser } from "langchain/output_parsers";
 
 export const runtime = "edge";
 
+function countSymbols(string: string): number {
+  const emojiRegex = /[\p{Emoji}]/gu;
+  const charRegex = /\p{L}/gu;
+  const emojis = string.match(emojiRegex) || [];
+  const chars = string.match(charRegex) || [];
+  return emojis.length + chars.length;
+}
+
 async function validatePlates(
   userInput: string,
   plates: string[]
 ): Promise<string[]> {
   const rules = userInput.split(". ");
   let regex: RegExp = /^[\w\d]{3,7}$/;
+  let symbolsAllowed = false;
+  let minChars = 3;
+  let maxChars = 7;
+  let exactLength = false;
 
   for (const rule of rules) {
-    if (rule.startsWith("must be plates with just")) {
-      const countMatch = rule.match(/(\d+)/);
-      if (countMatch) {
-        regex = new RegExp(`^[\\w\\d]{${countMatch[0]}}$`);
-      }
-    } else if (rule === "must be just letters, no numbers") {
-      regex = /^[a-zA-Z]{3,7}$/;
-    } else if (rule === "must be just numbers, no letters") {
-      regex = /^\d{3,7}$/;
-    } else if (rule.startsWith("any number of characters between")) {
+    if (rule === "allow symbols") {
+      symbolsAllowed = true;
+    }
+  }
+
+  for (const rule of rules) {
+    if (
+      rule.startsWith(
+        "must be plates with just any number of characters between"
+      )
+    ) {
       const countMatch = rule.match(/(\d+)/g);
       if (countMatch && countMatch.length === 2) {
-        regex = new RegExp(`^[\\w\\d]{${countMatch[0]},${countMatch[1]}}$`);
+        minChars = parseInt(countMatch[0]);
+        maxChars = parseInt(countMatch[1]);
+        exactLength = false;
+        if (symbolsAllowed) {
+          regex = new RegExp(`^[a-zA-Z1-9❤⭐👆➕]{${minChars},${maxChars}}$`);
+        } else {
+          regex = new RegExp(`^[a-zA-Z1-9]{${minChars},${maxChars}}$`);
+        }
+      }
+    } else if (rule.startsWith("must be plates with just")) {
+      const countMatch = rule.match(/(\d+)/);
+      if (countMatch) {
+        minChars = maxChars = parseInt(countMatch[0]);
+        exactLength = true;
+        if (symbolsAllowed) {
+          regex = new RegExp(`^[a-zA-Z1-9❤⭐👆➕]{${minChars}}$`);
+        } else {
+          regex = new RegExp(`^[a-zA-Z1-9]{${minChars}}$`);
+        }
+      }
+    } else if (rule === "must be just letters, no numbers") {
+      if (symbolsAllowed) {
+        regex = new RegExp(`^[a-zA-Z❤⭐👆➕]{${minChars},${maxChars}}$`);
+      } else {
+        regex = new RegExp(`^[a-zA-Z]{${minChars},${maxChars}}$`);
+      }
+    } else if (rule === "must be just numbers, no letters") {
+      if (symbolsAllowed) {
+        regex = new RegExp(`^[1-9❤⭐👆➕]{${minChars},${maxChars}}$`);
+      } else {
+        regex = new RegExp(`^[1-9]{${minChars},${maxChars}}$`);
       }
     } else if (rule === "use numbers and letters") {
-      regex = /^[a-zA-Z0-9]{3,7}$/;
+      if (symbolsAllowed) {
+        regex = new RegExp(`^[a-zA-Z1-9❤⭐👆➕]{${minChars},${maxChars}}$`);
+      } else {
+        regex = new RegExp(`^[a-zA-Z1-9]{${minChars},${maxChars}}$`);
+      }
     }
   }
 
   const validPlates: string[] = [];
   for (const plate of plates) {
-    if (regex.test(plate) && !plate.includes("0")) {
+    const plateLength = countSymbols(plate);
+    if (
+      regex.test(plate) &&
+      ((exactLength && plateLength === maxChars) ||
+        (!exactLength && plateLength >= minChars && plateLength <= maxChars))
+    ) {
       validPlates.push(plate);
     }
   }
@@ -81,7 +133,7 @@ export async function POST(req: NextRequest) {
 
     const model = new ChatOpenAI({
       openAIApiKey: process.env.OPENAI_API_KEY,
-      temperature: 0.8,
+      temperature: 0.5,
       modelName: "gpt-4-1106-preview",
     });
 
@@ -90,28 +142,31 @@ export async function POST(req: NextRequest) {
     let numPlates = 10;
 
     while (validPlates.length < 10) {
-      const TEMPLATE = `Generate ${numPlates} unique license plate suggestions for California, USA. Do not take into account recommendations such as  ${allGeneratedPlates.join(
+      const TEMPLATE = `Generate ${numPlates} UNIQUE license plate suggestions for California, USA. Do not take into account the following suggestions ${allGeneratedPlates.join(
         ", "
-      )}.The user input has a defined format and I will give you 5 examples of user input and the expected output. 
+      )}. It is very important that you follow all the instructions and guidelines that I will write to you.The user input has a defined format and I will give you 5 examples of user input and the expected output. 
 
-      User: must be plates with just 6 characters. must be just letters, no numbers. my preferences are: Vikings
-      Output: must be ${numPlates} plates with 6 characters and just letters. You can use names of heroes from Norse mythology, special places like Valhalla or special events like Ragnarok.
-      User: must be plates with just 6 characters. must be just numbers, no letters. my preferences are: friends the tv show
-      Output: must be ${numPlates} plates with 6 characters and just numbers. So you can use special dates, numbers of apartments, doors, special events or special dates like birthday of the characters, etc.
-      User: must be plates with just 5 characters. must be just letters, no numbers. my preferences are: I like Starwars
-      Output: must be ${numPlates} plates with 5 characters and just letters. You can use names of characters, events, places that are in Star Wars.
-      User: must be plates with just 4 characters. must be just numbers, no letters. my preferences are: All apple environment
-      Output: must be ${numPlates} plates with 4 characters and just numbers. You can use special dates, numbers that are related to Apple, etc.
-      User: must be plates with just any number of characters between 3 and 7 characters. use numbers and letters. my preferences are: I have a dog called Lara, she is a yellow labrador
-      Output: in this case the user is not giving you any specific information about the number of characters either if he/she wants numbers, letters. So you can any special number about the labrators, the name of the dog. 
+      User: must be plates with just 6 characters. must be just letters, no numbers. allow symbols. my preferences are: Vikings
+      Output: must be ${numPlates} plates with just 6 characters and just letters. You can use names of heroes from Norse mythology, special places like Valhalla or special events like Ragnarok. includes symbols allowed in recommendations. include the symbols in the context of the plate.
+      User: must be plates with just 5 characters. must be just numbers, no letters. don't allow symbols. my preferences are: friends the tv show
+      Output: must be ${numPlates} plates with just 5 characters and just numbers. So you can use special dates, numbers of apartments, doors, special events or special dates like birthday of the characters, etc. do not include symbols.
+      User: must be plates with just 5 characters. must be just letters, no numbers. don't allow symbols. my preferences are: I like Starwars
+      Output: must be ${numPlates} plates with just 5 characters and just letters. You can use names of characters, events, places that are in Star Wars. do not include symbols.
+      User: must be plates with just 4 characters. must be just numbers, no letters. don't allow symbols. my preferences are: All apple environment
+      Output: must be ${numPlates} plates with just 4 characters and just numbers. You can use special dates, numbers that are related to Apple, etc. do not include symbols.
+      User: must be plates with just any number of characters between 3 and 7 characters. use numbers and letters. allow symbols. my preferences are: I have a dog called Lara, she is a yellow labrador
+      Output: in this case the user is not giving you any specific information about the number of characters either if the user wants numbers, letters. So you can any special number about the labrators, the name of the dog. includes symbols allowed in recommendations. include the symbols in the context of the plate.
 
-      The most important thing is that you understand that you can use all information related to the user's preference to generate the suggestions. It doesn't matter how many topics the user likes, you should return recommendations for everyone. Don't limit yourself.
+      The most important thing is that you understand that you can use all information related to the user preference to generate the suggestions, It doesn't matter how many topics the user likes, you should return recommendations for everyone, Don't limit yourself, If the user says they are from a certain place, look for relevant information about the place, If it searches for stadiums, give it stadium names, If they say they like a sport, search for information about that sport, and you can also combine the information they provide to generate suggestions.
+      You must generate at least 3 suggestions with symbols if the user wants, If the user indicates that they do not want symbols, you should not provide symbols. Symbols have their context, for example, replacing words or giving a certain style, Symbols count as one character, if the user asks for 5 characters, keep this in mind.
 
       Follow the basic guidelines:
       Follow DMV rules.
       Use numbers between 1 and 9. The 0 is not allowed.
       Special or accented characters are not accepted.
+      Symbols allowed: ❤, ⭐, 👆, ➕.
       Inappropriate words or short expressions of bad words, for example FCK, are prohibited.
+      Inappropriate words or intended words in any language are prohibited.
 
       Input: 
       {input}`;

@@ -10,6 +10,7 @@ export default function VGPage() {
   const [numChars, setNumChars] = useState<string>("5");
   const [charType, setCharType] = useState<string>("letters");
   const [charType2, setCharType2] = useState<string>("");
+  const [includeSymbols, setIncludeSymbols] = useState<boolean>(false);
 
   useEffect(() => {
     setCharType2(charType === "letters" ? "numbers" : "letters");
@@ -28,10 +29,14 @@ export default function VGPage() {
           charType !== ""
             ? `must be just ${charType}, no ${charType2}`
             : "use numbers and letters"
-        }`,
+        }. ${includeSymbols ? "allow symbols" : "don't allow symbols"}`,
       },
     ],
   });
+
+  const handleSymbolsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIncludeSymbols(e.target.checked);
+  };
 
   const handleNumChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setNumChars(e.target.value);
@@ -57,6 +62,14 @@ export default function VGPage() {
           <option value="letters">Just Letters</option>
           <option value="numbers">Just Numbers</option>
         </select>
+        <label>
+          <input
+            type="checkbox"
+            checked={includeSymbols}
+            onChange={handleSymbolsChange}
+          />
+          Allow symbols
+        </label>
         <input
           value={input}
           onChange={handleInputChange}
