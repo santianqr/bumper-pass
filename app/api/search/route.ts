@@ -19,10 +19,11 @@ const replaceSymbols = (text: string) => {
 export const POST = async (request: Request) => {
   try {
     const body = await request.json();
-    //const browser = await puppeteer.launch({ headless: false, slowMo: 50 });
-    const browser = await puppeteer.launch({ headless: "new" });
+    const browser = await puppeteer.launch({ headless: "new" }); // Modo sin cabeza para un rendimiento más rápido
     const page = await browser.newPage();
-    await page.goto("https://www.dmv.ca.gov/wasapp/ipp2/initPers.do");
+    await page.goto("https://www.dmv.ca.gov/wasapp/ipp2/initPers.do", {
+      waitUntil: "networkidle0",
+    }); // Espera hasta que no haya conexiones de red durante al menos 500 ms.
     await page.click("input#agree");
     const buttons = await page.$$("button");
     await buttons[1].click();
@@ -34,13 +35,6 @@ export const POST = async (request: Request) => {
     await page.click("label[for=isRegExpire60N]");
     await page.click("label[for=isVehLeasedN]");
     const symbols = ["❤", "⭐", "👆", "➕"];
-    const symbolMap: { [key: string]: string } = {
-      "❤": "heart",
-      "⭐": "star",
-      "👆": "hand",
-      "➕": "plus",
-    };
-    console.log(body.personalizedPlate);
     let hasSymbol = false;
     for (const symbol of symbols) {
       if (body.personalizedPlate.includes(symbol)) {
@@ -63,13 +57,9 @@ export const POST = async (request: Request) => {
     let modifiedPlate = replaceSymbols(body.personalizedPlate);
     modifiedPlate = modifiedPlate.padEnd(7, " ");
 
-    await page.type("input#plateChar0", modifiedPlate[0]);
-    await page.type("input#plateChar1", modifiedPlate[1]);
-    await page.type("input#plateChar2", modifiedPlate[2]);
-    await page.type("input#plateChar3", modifiedPlate[3]);
-    await page.type("input#plateChar4", modifiedPlate[4]);
-    await page.type("input#plateChar5", modifiedPlate[5]);
-    await page.type("input#plateChar6", modifiedPlate[6]);
+    for (let i = 0; i < 7; i++) {
+      await page.type(`input#plateChar${i}`, modifiedPlate[i]); // Utiliza un bucle para reducir la repetición de código
+    }
 
     const buttons_new2 = await page.$$("button");
     await buttons_new2[1].click();

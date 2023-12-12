@@ -95,6 +95,7 @@ async function validatePlates(
 
   const apiValidPlates: string[] = [];
   for (const plate of validPlates) {
+    console.log("Validating plate:", plate);
     const response: Response = await fetch("http://localhost:3000/api/search", {
       method: "POST",
       headers: {
@@ -139,35 +140,36 @@ export async function POST(req: NextRequest) {
 
     let validPlates: string[] = [];
     let allGeneratedPlates: string[] = [];
-    let numPlates = 10;
+    let numPlates = 20;
 
     while (validPlates.length < 10) {
-      const TEMPLATE = `Generate ${numPlates} UNIQUE license plate suggestions for California, USA. Do not take into account the following suggestions ${allGeneratedPlates.join(
+      const TEMPLATE = `Generate ${numPlates} UNIQUE license plate suggestions for California, USA. Exclude the following suggestions: ${allGeneratedPlates.join(
         ", "
-      )}. It is very important that you follow all the instructions and guidelines that I will write to you.The user input has a defined format and I will give you 5 examples of user input and the expected output. 
+      )}. It's crucial that you adhere to all the instructions and guidelines provided. The user input has a specific format, and I will provide 5 examples of user input and the expected output.
 
       User: must be plates with just 6 characters. must be just letters, no numbers. allow symbols. my preferences are: Vikings
       Output: must be ${numPlates} plates with just 6 characters and just letters. You can use names of heroes from Norse mythology, special places like Valhalla or special events like Ragnarok. includes symbols allowed in recommendations. include the symbols in the context of the plate.
       User: must be plates with just 5 characters. must be just numbers, no letters. don't allow symbols. my preferences are: friends the tv show
       Output: must be ${numPlates} plates with just 5 characters and just numbers. So you can use special dates, numbers of apartments, doors, special events or special dates like birthday of the characters, etc. do not include symbols.
-      User: must be plates with just 5 characters. must be just letters, no numbers. don't allow symbols. my preferences are: I like Starwars
-      Output: must be ${numPlates} plates with just 5 characters and just letters. You can use names of characters, events, places that are in Star Wars. do not include symbols.
+      User: must be plates with just 5 characters. must be just letters, no numbers. don't allow symbols. my preferences are: I like Starwars, I am Canadian and I like hockey
+      Output: Generate ${numPlates} plates with exactly 5 characters, using only letters. You can use names of characters, events, or places from Star Wars. You can also incorporate elements related to Canada and hockey, such as abbreviations of famous Canadian hockey players or teams. Do not include symbols.
       User: must be plates with just 4 characters. must be just numbers, no letters. don't allow symbols. my preferences are: All apple environment
-      Output: must be ${numPlates} plates with just 4 characters and just numbers. You can use special dates, numbers that are related to Apple, etc. do not include symbols.
+      numbers. You can use special dates or numbers related to Apple, such as the release dates of iconic Apple products (e.g., '0701' for July 2001, the release date of the first iPod). Do not include symbols.
       User: must be plates with just any number of characters between 3 and 7 characters. use numbers and letters. allow symbols. my preferences are: I have a dog called Lara, she is a yellow labrador
       Output: in this case the user is not giving you any specific information about the number of characters either if the user wants numbers, letters. So you can any special number about the labrators, the name of the dog. includes symbols allowed in recommendations. include the symbols in the context of the plate.
 
-      The most important thing is that you understand that you can use all information related to the user preference to generate the suggestions, It doesn't matter how many topics the user likes, you should return recommendations for everyone, Don't limit yourself, If the user says they are from a certain place, look for relevant information about the place, If it searches for stadiums, give it stadium names, If they say they like a sport, search for information about that sport, and you can also combine the information they provide to generate suggestions.
-      You must generate at least 3 suggestions with symbols if the user wants, If the user indicates that they do not want symbols, you should not provide symbols. Symbols have their context, for example, replacing words or giving a certain style, Symbols count as one character, if the user asks for 5 characters, keep this in mind.
+      The most important thing is to understand that you can use all information related to the user's preferences to generate the suggestions. Don't limit yourself. If the user mentions they're from a certain place, look for relevant information about that place. If they mention stadiums, suggest stadium names. If they mention a sport, look for information about that sport. You can also combine the information they provide to generate suggestions.
 
-      Follow the basic guidelines:
-      Follow DMV rules.
-      Use numbers between 1 and 9. The 0 is not allowed.
-      Special or accented characters are not accepted.
-      Symbols allowed: ❤, ⭐, 👆, ➕.
-      Inappropriate words or short expressions of bad words, for example FCK, are prohibited.
-      Inappropriate words or intended words in any language are prohibited.
-
+      You must generate at least 3 suggestions with symbols if the user wants them. If the user indicates they do not want symbols, do not include symbols. Symbols have their context, for example, replacing words or giving a certain style. Symbols count as one character, so if the user asks for 5 characters, keep this in mind.
+      
+      Follow these basic guidelines:
+      - Adhere to DMV rules.
+      - Use numbers between 1 and 9. Zero is not allowed.
+      - Special or accented characters are not accepted.
+      - Allowed symbols: ❤, ⭐, 👆, ➕.
+      - Inappropriate words or short expressions of bad words, for example, FCK, are prohibited.
+      - Inappropriate words or intended words in any language are prohibited.
+      
       Input: 
       {input}`;
 
@@ -216,7 +218,7 @@ export async function POST(req: NextRequest) {
       validPlates = [...validPlates, ...newValidPlates];
       console.log("All valid plates:", validPlates);
 
-      numPlates = 10 - validPlates.length;
+      numPlates = (10 - validPlates.length) * 2;
       console.log("Number of plates needed:", numPlates);
     }
 

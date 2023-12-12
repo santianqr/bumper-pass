@@ -11,6 +11,7 @@ export default function VGPage() {
   const [charType, setCharType] = useState<string>("letters");
   const [charType2, setCharType2] = useState<string>("");
   const [includeSymbols, setIncludeSymbols] = useState<boolean>(false);
+  const [allowSpaces, setAllowSpaces] = useState<boolean>(false);
 
   useEffect(() => {
     setCharType2(charType === "letters" ? "numbers" : "letters");
@@ -29,13 +30,17 @@ export default function VGPage() {
           charType !== ""
             ? `must be just ${charType}, no ${charType2}`
             : "use numbers and letters"
-        }. ${includeSymbols ? "allow symbols" : "don't allow symbols"}`,
+        }. ${includeSymbols ? "allow symbols" : "don't allow symbols"}. ${allowSpaces ? "allow spaces" : "don't allow spaces"}`, // Añadir si se permiten espacios
       },
     ],
   });
 
   const handleSymbolsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIncludeSymbols(e.target.checked);
+  };
+
+  const handleSpacesChange = (e: React.ChangeEvent<HTMLInputElement>) => { // Nuevo manejador para permitir espacios
+    setAllowSpaces(e.target.checked);
   };
 
   const handleNumChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -69,6 +74,14 @@ export default function VGPage() {
             onChange={handleSymbolsChange}
           />
           Allow symbols
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={allowSpaces}
+            onChange={handleSpacesChange}
+          />
+          Allow spaces
         </label>
         <input
           value={input}
