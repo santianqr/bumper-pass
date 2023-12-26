@@ -30,7 +30,9 @@ export default function VGPage() {
           charType !== ""
             ? `must be just ${charType}, no ${charType2}`
             : "use numbers and letters"
-        }. ${includeSymbols ? "allow symbols" : "don't allow symbols"}. ${allowSpaces ? "allow spaces" : "don't allow spaces"}`, // Añadir si se permiten espacios
+        }. ${includeSymbols ? "allow symbols" : "don't allow symbols"}. ${
+          allowSpaces ? "allow spaces" : "don't allow spaces"
+        }`,
       },
     ],
   });
@@ -39,7 +41,7 @@ export default function VGPage() {
     setIncludeSymbols(e.target.checked);
   };
 
-  const handleSpacesChange = (e: React.ChangeEvent<HTMLInputElement>) => { // Nuevo manejador para permitir espacios
+  const handleSpacesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAllowSpaces(e.target.checked);
   };
 

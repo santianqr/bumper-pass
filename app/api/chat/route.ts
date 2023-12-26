@@ -9,7 +9,7 @@ export const runtime = "edge";
 
 function countSymbols(string: string): number {
   const emojiRegex = /[\p{Emoji}]/gu;
-  const charRegex = /[\p{L}\p{P}\p{Z}]/gu; // Se ha añadido \p{P} para contar los caracteres de puntuación y \p{Z} para contar los espacios
+  const charRegex = /[\p{L}\p{P}\p{Z}]/gu;
   const emojis = string.match(emojiRegex) || [];
   const chars = string.match(charRegex) || [];
   return emojis.length + chars.length;

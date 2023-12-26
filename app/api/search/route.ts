@@ -19,7 +19,8 @@ const replaceSymbols = (text: string) => {
 export const POST = async (request: Request) => {
   try {
     const body = await request.json();
-    const browser = await puppeteer.launch({ headless: false, slowMo: 50 });
+    //const browser = await puppeteer.launch({ headless: false, slowMo: 50 });
+    const browser = await puppeteer.launch({ headless: "new" });
     const page = await browser.newPage();
     await page.goto("https://www.dmv.ca.gov/wasapp/ipp2/initPers.do", {
       waitUntil: "networkidle0",
