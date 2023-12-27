@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
-import puppeteer from "puppeteer";
+import * as puppeteer from "puppeteer";
+
+let browser: puppeteer.Browser | null = null;
 
 const symbolMap: { [key: string]: string } = {
   "❤": "heart",
@@ -19,12 +21,23 @@ const replaceSymbols = (text: string) => {
 export const POST = async (request: Request) => {
   try {
     const body = await request.json();
-    //const browser = await puppeteer.launch({ headless: false, slowMo: 50 });
-    const browser = await puppeteer.launch({ headless: "new" });
-    const page = await browser.newPage();
+    if (!browser) {
+      //browser = await puppeteer.launch({ headless: "new" });
+      browser = await puppeteer.launch({ headless: false, slowMo: 50 });
+    }
+    const [page] = await browser.pages(); // Usa la primera pestaña abierta
+
+    // Desactivar la carga de hojas de estilo
+    await page.setRequestInterception(true);
+    page.on("request", (request) => {
+      if (request.resourceType() === "stylesheet") request.abort();
+      else request.continue();
+    });
+
     await page.goto("https://www.dmv.ca.gov/wasapp/ipp2/initPers.do", {
       waitUntil: "networkidle0",
-    }); // Espera hasta que no haya conexiones de red durante al menos 500 ms.
+    });
+
     await page.click("input#agree");
     const buttons = await page.$$("button");
     await buttons[1].click();
@@ -59,7 +72,7 @@ export const POST = async (request: Request) => {
     modifiedPlate = modifiedPlate.padEnd(7, " ");
 
     for (let i = 0; i < 7; i++) {
-      await page.type(`input#plateChar${i}`, modifiedPlate[i]); // Utiliza un bucle para reducir la repetición de código
+      await page.type(`input#plateChar${i}`, modifiedPlate[i]);
     }
 
     const buttons_new2 = await page.$$("button");
@@ -68,12 +81,10 @@ export const POST = async (request: Request) => {
     await page.waitForNavigation({ waitUntil: "networkidle0" });
     const spanElement = await page.$(".progress__tooltip");
     if (spanElement === null) {
-      await browser.close();
       return NextResponse.json({ message: "NO", status: 200 });
     } else {
       const spanText = await spanElement.getProperty("textContent");
       const text = await spanText.jsonValue();
-      await browser.close();
       if (text === "Progress: 30%") {
         return NextResponse.json({ message: "OK", status: 200 });
       } else {
