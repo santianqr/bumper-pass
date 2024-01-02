@@ -22,16 +22,21 @@ export const POST = async (request: Request) => {
   try {
     const body = await request.json();
     if (!browser) {
-      //browser = await puppeteer.launch({ headless: "new" });
-      browser = await puppeteer.launch({ headless: false, slowMo: 50 });
+      browser = await puppeteer.launch({ headless: "new" });
+      //browser = await puppeteer.launch({ headless: false, slowMo: 50 });
     }
     const [page] = await browser.pages(); // Usa la primera pestaña abierta
 
     // Desactivar la carga de hojas de estilo
     await page.setRequestInterception(true);
     page.on("request", (request) => {
-      if (request.resourceType() === "stylesheet") request.abort();
-      else request.continue();
+      if (!request.isInterceptResolutionHandled()) {
+        if (request.resourceType() === "stylesheet") {
+          request.abort();
+        } else {
+          request.continue();
+        }
+      }
     });
 
     await page.goto("https://www.dmv.ca.gov/wasapp/ipp2/initPers.do", {

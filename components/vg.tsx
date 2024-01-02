@@ -3,15 +3,19 @@
 import { useChat } from "ai/react";
 import styles from "@/styles/vg.module.css";
 import Image from "next/image";
-import plates from "@/public/Recurso 68.svg";
+import platess from "@/public/Recurso 68.svg";
 import { useState, useEffect } from "react";
+import VGPopUp from "@/components/vg_pop";
 
 export default function VGPage() {
+  const [showComponent, setShowComponent] = useState<boolean>(false);
   const [numChars, setNumChars] = useState<string>("5");
   const [charType, setCharType] = useState<string>("letters");
   const [charType2, setCharType2] = useState<string>("");
   const [includeSymbols, setIncludeSymbols] = useState<boolean>(false);
   const [allowSpaces, setAllowSpaces] = useState<boolean>(false);
+  const [userContent, setUserContent] = useState<string>("");
+  const [plates, setPlates] = useState<string[]>([]);
 
   useEffect(() => {
     setCharType2(charType === "letters" ? "numbers" : "letters");
@@ -36,6 +40,18 @@ export default function VGPage() {
       },
     ],
   });
+
+  useEffect(() => {
+    const assistantMessage = messages.find(
+      (message) => message.role === "assistant"
+    );
+    if (assistantMessage) {
+      const content = JSON.parse(assistantMessage.content);
+      setPlates(content.plates);
+      setUserContent(messages[0].content);
+      setShowComponent(true);
+    }
+  }, [messages]);
 
   const handleSymbolsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIncludeSymbols(e.target.checked);
@@ -99,13 +115,20 @@ export default function VGPage() {
             const content = JSON.parse(message.content);
             return content.plates.map((plate: string) => (
               <div className={styles.plate} key={plate}>
-                <Image alt="" src={plates} width={200} height={100} />
+                <Image alt="" src={platess} width={200} height={100} />
                 <p className={styles.plateText}>{plate}</p>
               </div>
             ));
           }
           return null;
         })}
+        {showComponent && (
+          <VGPopUp
+            userContent={userContent}
+            plates={plates}
+            setUserContent={setUserContent}
+          />
+        )}
       </div>
     </div>
   );
