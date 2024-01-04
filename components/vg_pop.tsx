@@ -6,11 +6,11 @@ type VGPopUpProps = {
   setUserContent: (value: string) => void;
 };
 
-
-export default function VGPopUp({ userContent, plates, setUserContent }: VGPopUpProps) {
-
-
-
+export default function VGPopUp({
+  userContent,
+  plates,
+  setUserContent,
+}: VGPopUpProps) {
   const [feedback, setFeedback] = useState("");
 
   const handleYes = async () => {
@@ -43,7 +43,6 @@ export default function VGPopUp({ userContent, plates, setUserContent }: VGPopUp
     console.log(data);
   };
 
-
   return (
     <div className="flex flex-col">
       <p>Le están gustando las respuestas?</p>
@@ -51,14 +50,14 @@ export default function VGPopUp({ userContent, plates, setUserContent }: VGPopUp
         <button onClick={handleYes}>Yes</button>
         <button onClick={handleNo}>No</button>
         {feedback === "no" && (
-        <div>
-          <textarea
-            onChange={(e) => setUserContent(e.target.value)}
-            value={userContent}
-          />
-          <button onClick={handleSend}>Send</button>
-        </div>
-      )}
+          <div>
+            <textarea
+              onChange={(e) => setUserContent(e.target.value)}
+              value={userContent}
+            />
+            <button onClick={handleSend}>Send</button>
+          </div>
+        )}
       </div>
     </div>
   );

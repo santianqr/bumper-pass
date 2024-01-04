@@ -139,9 +139,9 @@ export async function POST(req: NextRequest) {
 
     let validPlates: string[] = [];
     let allGeneratedPlates: string[] = [];
-    let numPlates = 10;
+    let numPlates = 4;
 
-    while (validPlates.length < 5) {
+    while (validPlates.length < 2) {
       const TEMPLATE = `Generate ${numPlates} unique plates suggestions based strictly on user preferences for California, USA. Exclude the following suggestions: ${allGeneratedPlates.join(
         ", "
       )}. Use all the data you have related to the preferences that the user writes. Be very creative, write recommendations with related content, not just with the keywords that the user types. Even if the user writes about several topics, you can relate them to generate your recommendations. Relate as much information as possible to generate plate recommendations.
@@ -208,12 +208,12 @@ export async function POST(req: NextRequest) {
       validPlates = [...validPlates, ...newValidPlates];
       console.log("All valid plates:", validPlates);
 
-      numPlates = (5 - validPlates.length) * 2;
+      numPlates = (2 - validPlates.length) * 2;
       console.log("Number of plates needed:", numPlates);
     }
 
     return NextResponse.json(
-      { plates: validPlates.slice(0, 5) },
+      { plates: validPlates.slice(0, 2) },
       { status: 200 }
     );
   } catch (e: any) {

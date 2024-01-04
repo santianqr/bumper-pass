@@ -48,7 +48,14 @@ export default function VGPage() {
     if (assistantMessage) {
       const content = JSON.parse(assistantMessage.content);
       setPlates(content.plates);
-      setUserContent(messages[0].content);
+      const plateRules = messages[0].content;
+      const personalPreferences = messages
+        .slice(1)
+        .filter((message) => message.role === "user")
+        .map((message) => message.content);
+      setUserContent(
+        plateRules + ". my preferences are: " + personalPreferences.join(". ")
+      );
       setShowComponent(true);
     }
   }, [messages]);
