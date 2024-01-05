@@ -12,6 +12,7 @@ export default function VGPopUp({
   setUserContent,
 }: VGPopUpProps) {
   const [feedback, setFeedback] = useState("");
+  const [newPreferences, setNewPreferences] = useState("");
 
   const handleYes = async () => {
     // Aquí puedes enviar los datos al backend
@@ -37,7 +38,11 @@ export default function VGPopUp({
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ userContent }),
+      body: JSON.stringify({
+        userContent:
+          userContent.split(":")[0] + ". my preferences are: " + newPreferences,
+        plates: plates,
+      }),
     });
     const data = await response.json();
     console.log(data);
@@ -52,8 +57,8 @@ export default function VGPopUp({
         {feedback === "no" && (
           <div>
             <textarea
-              onChange={(e) => setUserContent(e.target.value)}
-              value={userContent}
+              onChange={(e) => setNewPreferences(e.target.value)}
+              value={newPreferences}
             />
             <button onClick={handleSend}>Send</button>
           </div>
