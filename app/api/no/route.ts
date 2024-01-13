@@ -129,15 +129,15 @@ export async function POST(req: NextRequest) {
 
     const model = new ChatOpenAI({
       openAIApiKey: process.env.OPENAI_API_KEY,
-      temperature: 0.5,
+      temperature: 0.3,
       modelName: "gpt-4-1106-preview",
     });
 
     let validPlates: string[] = [];
     let allGeneratedPlates: string[] = [];
-    let numPlates = 4;
+    let numPlates = 5;
 
-    while (validPlates.length < 2) {
+    while (validPlates.length < 5) {
       const TEMPLATE = `Generate ${numPlates} unique plates suggestions based strictly on user preferences for California, USA. Exclude the following suggestions: ${allGeneratedPlates.join(
         ", "
       )} and ${
@@ -206,12 +206,12 @@ export async function POST(req: NextRequest) {
       validPlates = [...validPlates, ...newValidPlates];
       console.log("All valid plates:", validPlates);
 
-      numPlates = (2 - validPlates.length) * 2;
+      numPlates = (5 - validPlates.length) * 2;
       console.log("Number of plates needed:", numPlates);
     }
 
     return NextResponse.json(
-      { plates: validPlates.slice(0, 2) },
+      { plates: validPlates.slice(0, 5) },
       { status: 200 }
     );
   } catch (e: any) {

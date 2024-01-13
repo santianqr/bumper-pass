@@ -1,4 +1,7 @@
 import { useState } from "react";
+import Image from "next/image";
+import platess from "@/public/Recurso 68.svg";
+import styles from "@/styles/vg.module.css";
 
 type VGPopUpProps = {
   userContent: string;
@@ -6,6 +9,7 @@ type VGPopUpProps = {
   setUserContent: (value: string) => void;
 };
 
+// Si conoces la estructura exacta de los objetos en las placas, reemplaza 'object' con la interfaz adecuada
 export default function VGPopUp({
   userContent,
   plates,
@@ -13,9 +17,9 @@ export default function VGPopUp({
 }: VGPopUpProps) {
   const [feedback, setFeedback] = useState("");
   const [newPreferences, setNewPreferences] = useState("");
+  const [displayedPlates, setDisplayedPlates] = useState<object[]>([]);
 
   const handleYes = async () => {
-    // Aquí puedes enviar los datos al backend
     const response = await fetch("/api/yes", {
       method: "POST",
       headers: {
@@ -24,7 +28,18 @@ export default function VGPopUp({
       body: JSON.stringify({ userContent, plates }),
     });
     const data = await response.json();
-    console.log(data);
+    if (Array.isArray(data)) {
+      setDisplayedPlates(data);
+    } else if (typeof data === "object") {
+      // Convertir el objeto en un array
+      const arrayData = Object.values(data) as object[];
+      setDisplayedPlates(arrayData);
+    } else {
+      console.error(
+        "La respuesta de la API no es un array ni un objeto:",
+        data
+      );
+    }
   };
 
   const handleNo = () => {
@@ -32,7 +47,6 @@ export default function VGPopUp({
   };
 
   const handleSend = async () => {
-    // Aquí puedes enviar los datos al backend
     const response = await fetch("/api/no", {
       method: "POST",
       headers: {
@@ -45,7 +59,18 @@ export default function VGPopUp({
       }),
     });
     const data = await response.json();
-    console.log(data);
+    if (Array.isArray(data)) {
+      setDisplayedPlates(data);
+    } else if (typeof data === "object") {
+      // Convertir el objeto en un array
+      const arrayData = Object.values(data) as object[];
+      setDisplayedPlates(arrayData);
+    } else {
+      console.error(
+        "La respuesta de la API no es un array ni un objeto:",
+        data
+      );
+    }
   };
 
   return (
@@ -63,6 +88,12 @@ export default function VGPopUp({
             <button onClick={handleSend}>Send</button>
           </div>
         )}
+        {displayedPlates.map((plate, index) => (
+          <div key={index} className={styles.plate}>
+            <Image alt="" src={platess} width={200} height={100} />
+            <p>{JSON.stringify(plate)}</p>
+          </div>
+        ))}
       </div>
     </div>
   );
