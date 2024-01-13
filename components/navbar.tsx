@@ -7,6 +7,7 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
+import { User } from "lucide-react";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -59,6 +60,9 @@ export default function Navbar() {
           >
             Contact
           </NavigationMenuLink>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <User className="rounded-full bg-gradient-to-r from-primary to-primary/60 text-background" />
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>
