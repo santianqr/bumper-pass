@@ -1,4 +1,85 @@
+"use client";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useState, useEffect } from "react";
+import { useChat } from "ai/react";
+import platess from "@/public/bp_plate.png";
+import Image from "next/image";
+
 export default function VGPage() {
+  const [showComponent, setShowComponent] = useState<boolean>(false);
+  const [numChars, setNumChars] = useState<string>("5");
+  const [charType, setCharType] = useState<string>("letters");
+  const [charType2, setCharType2] = useState<string>("");
+  const [includeSymbols, setIncludeSymbols] = useState<boolean>(false);
+  const [allowSpaces, setAllowSpaces] = useState<boolean>(false);
+  const [userContent, setUserContent] = useState<string>("");
+  const [plates, setPlates] = useState<string[]>([]);
+
+  useEffect(() => {
+    setCharType2(charType === "letters" ? "numbers" : "letters");
+  }, [charType]);
+
+  const { messages, input, handleInputChange, handleSubmit } = useChat({
+    initialMessages: [
+      {
+        id: "1",
+        role: "user",
+        content: `must be plates with just ${
+          numChars !== "any"
+            ? numChars
+            : "any number of characters between 3 and 7"
+        } characters. ${
+          charType !== "mix"
+            ? `must be just ${charType}, no ${charType2}`
+            : "use numbers and letters"
+        }. ${includeSymbols ? "allow symbols" : "don't allow symbols"}. ${
+          allowSpaces ? "allow spaces" : "don't allow spaces"
+        }`,
+      },
+    ],
+  });
+
+  const handleSymbolsChange = (checked: boolean | "indeterminate") => {
+    setIncludeSymbols(checked as boolean);
+  };
+  const handleSpacesChange = (checked: boolean | "indeterminate") => {
+    setAllowSpaces(checked as boolean);
+  };
+
+  const handleNumChange = (value: string) => {
+    setNumChars(value);
+  };
+
+  const handleTypeChange = (value: string) => {
+    setCharType(value);
+  };
+
+  console.log(charType);
+  console.log(charType2);
+  console.log(numChars);
+  console.log(includeSymbols);
+  console.log(allowSpaces);
+
   return (
     <main className="py-2">
       <div className="mx-auto flex flex-col items-center">
@@ -10,8 +91,88 @@ export default function VGPage() {
             </h2>
           </div>
         </div>
-        <div>hola</div>
-        <div>hola</div>
+        <div className="max-w-xl space-y-3 my-2 ">
+          <p className="font-semibold text-primary">Instructions</p>
+          <ul className="list-disc list-inside text-sm">
+            <li>
+              Be specific as possible about your style, personality and
+              interests to create a unique suggestions for your plate.
+            </li>
+            <li>Maximum XX characters.</li>
+            <li>
+              We hae and estimated time of 1 to 2 minutes to have your results,
+              depending on how specific you are.
+            </li>
+          </ul>
+        </div>
+        <form
+          className="max-w-xl w-full flex flex-col items-center space-y-2"
+          onSubmit={handleSubmit}
+        >
+          <Select value={numChars} onValueChange={handleNumChange}>
+            <SelectTrigger className="w-[280px]">
+              <SelectValue placeholder="Select the number of characters" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="any">Any</SelectItem>
+              <SelectItem value="3">3</SelectItem>
+              <SelectItem value="4">4</SelectItem>
+              <SelectItem value="5">5</SelectItem>
+              <SelectItem value="6">6</SelectItem>
+              <SelectItem value="7">7</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={charType} onValueChange={handleTypeChange}>
+            <SelectTrigger className="w-[280px]">
+              <SelectValue placeholder="Select the type of characters" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="mix">Mixed</SelectItem>
+              <SelectItem value="letters">Just letters</SelectItem>
+              <SelectItem value="numbers">Just numbers</SelectItem>
+            </SelectContent>
+          </Select>
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="symbols"
+                checked={includeSymbols}
+                onCheckedChange={handleSymbolsChange}
+              />
+              <label
+                htmlFor="symbols"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Include symbols
+              </label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="spaces"
+                checked={allowSpaces}
+                onCheckedChange={handleSpacesChange}
+              />
+              <label
+                htmlFor="spaces"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Include spaces
+              </label>
+            </div>
+          </div>
+          <div className="grid grid-cols-4 w-full gap-2">
+            <Textarea
+              placeholder="Type your message here."
+              className="col-span-4"
+              value={input}
+              onChange={handleInputChange}
+            />
+            <Button className="col-start-4" type="submit">
+              Send message
+            </Button>
+          </div>
+        </form>
+        {JSON.stringify(messages)}
       </div>
     </main>
   );
