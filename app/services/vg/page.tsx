@@ -74,19 +74,15 @@ export default function VGPage() {
     setCharType(value);
   };
 
-  console.log(charType);
-  console.log(charType2);
-  console.log(numChars);
-  console.log(includeSymbols);
-  console.log(allowSpaces);
-
   return (
     <main className="py-2">
       <div className="mx-auto flex flex-col items-center">
         <div className="w-full py-10 bg-gradient-to-r from-primary to-primary/60 mx-auto flex flex-col items-center">
           <div>
-            <p className="text-3xl text-background ">Welcome to our</p>
-            <h2 className="scroll-m-20 text-5xl font-semibold tracking-tight first:mt-0 text-background">
+            <p className="text-3xl text-background dark:text-foreground">
+              Welcome to our
+            </p>
+            <h2 className="scroll-m-20 text-5xl font-semibold tracking-tight first:mt-0 text-background dark:text-foreground">
               Variation Generator
             </h2>
           </div>
@@ -100,7 +96,7 @@ export default function VGPage() {
             </li>
             <li>Maximum XX characters.</li>
             <li>
-              We hae and estimated time of 1 to 2 minutes to have your results,
+              We have an estimated time of 1 to 2 minutes to have your results,
               depending on how specific you are.
             </li>
           </ul>
@@ -168,11 +164,23 @@ export default function VGPage() {
               onChange={handleInputChange}
             />
             <Button className="col-start-4" type="submit">
-              Send message
+              Generate
             </Button>
           </div>
         </form>
         {JSON.stringify(messages)}
+        {messages.map((message) => {
+          if (message.role === "assistant") {
+            const content = JSON.parse(message.content);
+            return content.plates.map((plate: string) => (
+              <div key={plate}>
+                <Image alt="" src={platess} width={200} height={100} />
+                <p>{plate}</p>
+              </div>
+            ));
+          }
+          return null;
+        })}
       </div>
     </main>
   );
