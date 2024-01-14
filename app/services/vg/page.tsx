@@ -24,6 +24,7 @@ import { useState, useEffect } from "react";
 import { useChat } from "ai/react";
 import platess from "@/public/bp_plate.png";
 import Image from "next/image";
+import VgPopUp from "@/components/vg_popup";
 
 export default function VGPage() {
   const [showComponent, setShowComponent] = useState<boolean>(false);
@@ -58,6 +59,25 @@ export default function VGPage() {
       },
     ],
   });
+
+  useEffect(() => {
+    const assistantMessage = messages.find(
+      (message) => message.role === "assistant"
+    );
+    if (assistantMessage) {
+      const content = JSON.parse(assistantMessage.content);
+      setPlates(content.plates);
+      const plateRules = messages[0].content;
+      const personalPreferences = messages
+        .slice(1)
+        .filter((message) => message.role === "user")
+        .map((message) => message.content);
+      setUserContent(
+        plateRules + ". my preferences are: " + personalPreferences.join(". ")
+      );
+      setShowComponent(true);
+    }
+  }, [messages]);
 
   const handleSymbolsChange = (checked: boolean | "indeterminate") => {
     setIncludeSymbols(checked as boolean);
@@ -169,18 +189,40 @@ export default function VGPage() {
           </div>
         </form>
         {JSON.stringify(messages)}
-        {messages.map((message) => {
-          if (message.role === "assistant") {
-            const content = JSON.parse(message.content);
-            return content.plates.map((plate: string) => (
-              <div key={plate}>
-                <Image alt="" src={platess} width={200} height={100} />
-                <p>{plate}</p>
-              </div>
-            ));
-          }
-          return null;
-        })}
+        <Card className="max-w-xl">
+          <CardHeader>
+            <CardTitle>Your type</CardTitle>
+            <CardDescription>{userContent}</CardDescription>
+          </CardHeader>
+          <CardContent className="grid grid-cols-2 gap-x-4 justify-items-start">
+            <div>
+              {messages.map((message) => {
+                if (message.role === "assistant") {
+                  const content = JSON.parse(message.content);
+                  return content.plates.map((plate: string) => (
+                    <div key={plate} className="relative">
+                      <Image alt="" src={platess} width={200} height={100} />
+                      <p className="absolute top-1/2 right-1/2 text-2xl font-bold">
+                        {plate}
+                      </p>
+                    </div>
+                  ));
+                }
+                return null;
+              })}
+            </div>
+          </CardContent>
+          <CardFooter className="flex justify-end">
+            <Button size={"sm"}>Go to My Dashboard</Button>
+          </CardFooter>
+        </Card>
+        {showComponent && (
+          <VgPopUp
+            userContent={userContent}
+            plates={plates}
+            setUserContent={setUserContent}
+          />
+        )}
       </div>
     </main>
   );
