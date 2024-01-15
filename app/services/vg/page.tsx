@@ -188,7 +188,6 @@ export default function VGPage() {
             </Button>
           </div>
         </form>
-        {JSON.stringify(messages)}
         <Card className="max-w-xl">
           <CardHeader>
             <CardTitle>Your type</CardTitle>
