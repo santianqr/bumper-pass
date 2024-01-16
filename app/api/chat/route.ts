@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
-import { ChatOpenAI } from "langchain/chat_models/openai";
-import { PromptTemplate } from "langchain/prompts";
+import { ChatOpenAI } from "@langchain/openai";
+import { PromptTemplate } from "@langchain/core/prompts";
 import { JsonOutputFunctionsParser } from "langchain/output_parsers";
 
 export const runtime = "edge";
@@ -144,7 +144,7 @@ export async function POST(req: NextRequest) {
     while (validPlates.length < 5) {
       const TEMPLATE = `Generate ${numPlates} unique plates suggestions based strictly on user preferences for California, USA. Exclude the following suggestions: ${allGeneratedPlates.join(
         ", "
-      )}. Use all the data you have related to the preferences that the user writes. Be very creative, write recommendations with related content, not just with the keywords that the user types. Even if the user writes about several topics, you can relate them to generate your recommendations. Relate as much information as possible to generate plate recommendations.
+      )}. Follow the user guidelines to the letter, but be creative with your suggestions. Use all the data you have related to the preferences that the user writes. Be very creative, write recommendations with related content, not just with the keywords that the user types. Even if the user writes about several topics, you can relate them to generate your recommendations. Relate as much information as possible to generate plate recommendations.
       If the user enables symbols or spaces, at least 30% of your recommendations must come with symbols or spaces. It's crucial that you adhere to all the instructions and guidelines provided. The user input has a specific format separeted for dots:
       1.The exact number of characters or wants recommendations between 3 and 7 characters in length.
       2.If the user wants only letters, only numbers or allows both.
@@ -162,8 +162,6 @@ export async function POST(req: NextRequest) {
       -Inappropriate words or intended words in any language are prohibited.
       Input: 
       {input}`;
-
-      //console.log("Template:", TEMPLATE);
 
       const prompt = PromptTemplate.fromTemplate<{ input: string }>(TEMPLATE);
 
