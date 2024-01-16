@@ -116,13 +116,22 @@ export default function VGPage() {
           <p className="font-semibold text-primary">Instructions</p>
           <ul className="list-disc list-inside text-sm">
             <li>
-              Be specific as possible about your style, personality and
-              interests to create a unique suggestions for your plate.
+              Be as specific as possible about your tastes and preferences.
             </li>
-            <li>Maximum XX characters.</li>
+            <li>Separate your preferences by points (.)</li>
+            <li>The limit is 180 characters.</li>
             <li>
-              We have an estimated time of 1 to 2 minutes to have your results,
-              depending on how specific you are.
+              Do not mention anything about spaces or symbols, this is only
+              filled in the required fields.
+            </li>
+            <li>
+              Inappropriate or offensive words or topics are not accepted in any
+              language.
+            </li>
+            <li>
+              For example: I like the dogs. I enjoy playing games on the
+              internet like Red Dead Redemption. I love football and my favorite
+              player is Messi.
             </li>
           </ul>
         </div>
