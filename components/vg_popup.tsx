@@ -14,16 +14,20 @@ type VGPopUpProps = {
   userContent: string;
   plates: string[];
   setUserContent: (value: string) => void;
+  updatePlates: (newPlates: string[]) => void;
+  setShowComponent: (value: boolean) => void; // Aquí agregas la nueva función
 };
+
 
 export default function VgPopUp({
   userContent,
   plates,
   setUserContent,
+  updatePlates,
+  setShowComponent
 }: VGPopUpProps) {
   const [feedback, setFeedback] = useState("");
   const [newPreferences, setNewPreferences] = useState("");
-  const [apiData, setApiData] = useState<ApiData | null>(null);
 
   const handleYes = async () => {
     const response = await fetch("/api/yes", {
@@ -35,7 +39,8 @@ export default function VgPopUp({
     });
     const data: ApiData = await response.json(); // Usa el tipo ApiData aquí
     console.log(data);
-    setApiData(data);
+    updatePlates(data.plates);
+    setShowComponent(false);
   };
 
   const handleNo = () => {
@@ -56,17 +61,18 @@ export default function VgPopUp({
     });
     const data: ApiData = await response.json(); // Usa el tipo ApiData aquí
     console.log(data);
-    setApiData(data);
+    updatePlates(data.plates);
+    setShowComponent(false);
   };
 
   return (
-    <article>
+    <article className="p-6 max-w-sm w-full mx-auto bg-white rounded-xl shadow-md flex flex-col items-center">
       <div>
-        <p>Are you liking the suggestions?</p>
-        <p>Press yes to continue</p>
-        <p>Press no to edit your preferences</p>
+        <p className="font-semibold text-md">Are you liking the suggestions?</p>
+        <p className="text-sm">Press yes to continue</p>
+        <p className="text-sm">Press no to edit your preferences</p>
       </div>
-      <div>
+      <div className="space-x-4 mt-2">
         <Button size={"sm"} className="w-12" onClick={handleYes}>
           Yes
         </Button>
@@ -74,9 +80,9 @@ export default function VgPopUp({
           No
         </Button>
       </div>
-      <div>
+      <div className="mt-2 max-w-sm w-full">
         {feedback === "no" && (
-          <div>
+          <div className="space-y-2 items-center flex flex-col">
             <Textarea
               onChange={(e) => setNewPreferences(e.target.value)}
               value={newPreferences}
@@ -84,13 +90,6 @@ export default function VgPopUp({
             <Button onClick={handleSend}>Send</Button>
           </div>
         )}
-        {apiData &&
-          apiData.plates.map(
-            (
-              plate: string,
-              index: number // Define los tipos aquí
-            ) => <p key={index}>{plate}</p>
-          )}
       </div>
     </article>
   );

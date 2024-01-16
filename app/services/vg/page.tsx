@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState, useEffect } from "react";
 import { useChat } from "ai/react";
+import { LoaderIcon } from "lucide-react";
 import platess from "@/public/bp_plate.png";
 import Image from "next/image";
 import VgPopUp from "@/components/vg_popup";
@@ -92,6 +93,10 @@ export default function VGPage() {
 
   const handleTypeChange = (value: string) => {
     setCharType(value);
+  };
+
+  const updatePlates = (newPlates: string[]) => {
+    setPlates((prevPlates) => [...prevPlates, ...newPlates]);
   };
 
   return (
@@ -188,40 +193,43 @@ export default function VGPage() {
             </Button>
           </div>
         </form>
-        <Card className="max-w-xl">
-          <CardHeader>
-            <CardTitle>Your type</CardTitle>
-            <CardDescription>{userContent}</CardDescription>
-          </CardHeader>
-          <CardContent className="grid grid-cols-2 gap-x-4 justify-items-start">
-            <div>
-              {messages.map((message) => {
-                if (message.role === "assistant") {
-                  const content = JSON.parse(message.content);
-                  return content.plates.map((plate: string) => (
-                    <div key={plate} className="relative">
-                      <Image alt="" src={platess} width={200} height={100} />
-                      <p className="absolute top-1/2 right-1/2 text-2xl font-bold">
-                        {plate}
-                      </p>
-                    </div>
-                  ));
-                }
-                return null;
-              })}
-            </div>
-          </CardContent>
-          <CardFooter className="flex justify-end">
-            <Button size={"sm"}>Go to My Dashboard</Button>
-          </CardFooter>
-        </Card>
-        {showComponent && (
-          <VgPopUp
-            userContent={userContent}
-            plates={plates}
-            setUserContent={setUserContent}
-          />
-        )}
+        <div className="space-x-2 mt-2 flex flex-col items-center max-w-xl w-full">
+          {messages.some(
+            (message) =>
+              message.role === "assistant" &&
+              JSON.parse(message.content).plates.length > 0
+          ) && (
+            <Card className="max-w-xl w-full">
+              <CardHeader>
+                <CardTitle>Your inputs</CardTitle>
+                <CardDescription>{userContent.split(":")[1]}</CardDescription>
+              </CardHeader>
+              <CardContent className="grid grid-cols-2 gap-x-4 justify-items-center">
+                {plates.map((plate: string) => (
+                  <div key={plate} className="relative">
+                    <Image alt="" src={platess} width={200} height={100} />
+                    <p className="absolute top-[60%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold">
+                      {plate}
+                    </p>
+                  </div>
+                ))}
+              </CardContent>
+              <CardFooter className="flex justify-end">
+                <Button size={"sm"}>Go to My Dashboard</Button>
+              </CardFooter>
+            </Card>
+          )}
+
+          {showComponent && (
+            <VgPopUp
+              userContent={userContent}
+              plates={plates}
+              setUserContent={setUserContent}
+              updatePlates={updatePlates}
+              setShowComponent={setShowComponent}
+            />
+          )}
+        </div>
       </div>
     </main>
   );

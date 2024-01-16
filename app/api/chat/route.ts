@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
-import { ChatOpenAI } from "langchain/chat_models/openai";
-import { PromptTemplate } from "langchain/prompts";
+import { ChatOpenAI } from "@langchain/openai";
+import { PromptTemplate } from "@langchain/core/prompts";
 import { JsonOutputFunctionsParser } from "langchain/output_parsers";
 
 export const runtime = "edge";
@@ -139,7 +139,7 @@ export async function POST(req: NextRequest) {
 
     let validPlates: string[] = [];
     let allGeneratedPlates: string[] = [];
-    let numPlates = 10;
+    let numPlates = 5;
 
     while (validPlates.length < 5) {
       const TEMPLATE = `Generate ${numPlates} unique plates suggestions based strictly on user preferences for California, USA. Exclude the following suggestions: ${allGeneratedPlates.join(
