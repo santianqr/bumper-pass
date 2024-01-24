@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import * as puppeteer from "puppeteer";
-
-let browser: puppeteer.Browser | null = null;
+//import * as puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
+import chromium from "chrome-aws-lambda";
 
 const symbolMap: { [key: string]: string } = {
   "❤": "heart",
@@ -9,6 +9,8 @@ const symbolMap: { [key: string]: string } = {
   "👆": "hand",
   "➕": "plus",
 };
+
+const SEO_RESOLUTION = { width: 1200, height: 630 };
 
 const replaceSymbols = (text: string) => {
   let newText = text;
@@ -21,13 +23,18 @@ const replaceSymbols = (text: string) => {
 export const POST = async (request: Request) => {
   try {
     const body = await request.json();
-    if (!browser) {
-      browser = await puppeteer.launch({ headless: "new" });
-      //browser = await puppeteer.launch({ headless: false, slowMo: 50 });
-    }
-    const [page] = await browser.pages(); // Usa la primera pestaña abierta
 
-    // Desactivar la carga de hojas de estilo
+    const browser = await puppeteer.launch({
+      args: [...chromium.args, "--hide-scrollbars", "--disable-web-security"],
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath,
+      headless: true,
+      ignoreHTTPSErrors: true,
+    });
+
+    const [page] = await browser.pages();
+    page.setViewport(SEO_RESOLUTION);
+
     await page.setRequestInterception(true);
     page.on("request", (request) => {
       if (!request.isInterceptResolutionHandled()) {
