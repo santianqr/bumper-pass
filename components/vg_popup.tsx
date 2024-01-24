@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
-import platess from "@/public/bp_plate.png";
+import { LoaderIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -18,13 +17,12 @@ type VGPopUpProps = {
   setShowComponent: (value: boolean) => void; // Aquí agregas la nueva función
 };
 
-
 export default function VgPopUp({
   userContent,
   plates,
   setUserContent,
   updatePlates,
-  setShowComponent
+  setShowComponent,
 }: VGPopUpProps) {
   const [feedback, setFeedback] = useState("");
   const [newPreferences, setNewPreferences] = useState("");
@@ -88,6 +86,7 @@ export default function VgPopUp({
               value={newPreferences}
             />
             <Button onClick={handleSend}>Send</Button>
+            <LoaderIcon className="animate-spin" />
           </div>
         )}
       </div>

@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-//import * as puppeteer from "puppeteer";
-import puppeteer from "puppeteer-core";
-import chromium from "chrome-aws-lambda";
+import * as puppeteer from "puppeteer";
+//import chromium from "chrome-aws-lambda";
 
 const symbolMap: { [key: string]: string } = {
   "❤": "heart",
@@ -9,8 +8,6 @@ const symbolMap: { [key: string]: string } = {
   "👆": "hand",
   "➕": "plus",
 };
-
-const SEO_RESOLUTION = { width: 1200, height: 630 };
 
 const replaceSymbols = (text: string) => {
   let newText = text;
@@ -24,20 +21,15 @@ export const POST = async (request: Request) => {
   try {
     const body = await request.json();
 
-    const browser = await puppeteer.launch({
-      args: [...chromium.args, "--hide-scrollbars", "--disable-web-security"],
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath,
-      headless: true,
-      ignoreHTTPSErrors: true,
-    });
+    const browser = await puppeteer.launch({ headless: "new" });
+    //const browser = await puppeteer.launch({ headless: false, slowMo: 50 });
 
-    const [page] = await browser.pages();
-    page.setViewport(SEO_RESOLUTION);
+    const [page] = await browser.pages(); // Usa la primera pestaña abierta
 
+    // Desactivar la carga de hojas de estilo
     await page.setRequestInterception(true);
     page.on("request", (request) => {
-      if (!request.isInterceptResolutionHandled()) {
+      if (request.isNavigationRequest()) {
         if (request.resourceType() === "stylesheet") {
           request.abort();
         } else {
@@ -92,16 +84,20 @@ export const POST = async (request: Request) => {
 
     await page.waitForNavigation({ waitUntil: "networkidle0" });
     const spanElement = await page.$(".progress__tooltip");
-    if (spanElement === null) {
-      return NextResponse.json({ message: "NO", status: 200 });
-    } else {
+    if (spanElement !== null) {
       const spanText = await spanElement.getProperty("textContent");
-      const text = await spanText.jsonValue();
-      if (text === "Progress: 30%") {
-        return NextResponse.json({ message: "OK", status: 200 });
+      if (spanText !== undefined) {
+        const text = await spanText.jsonValue();
+        if (text === "Progress: 30%") {
+          return NextResponse.json({ message: "OK", status: 200 });
+        } else {
+          return NextResponse.json({ message: "NO", status: 200 });
+        }
       } else {
-        return NextResponse.json({ message: "NO", status: 200 });
+        // Manejar el caso en que spanText es undefined
       }
+    } else {
+      return NextResponse.json({ message: "NO", status: 200 });
     }
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });

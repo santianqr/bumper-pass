@@ -18,8 +18,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useState, useEffect } from "react";
 import { useChat } from "ai/react";
 import { LoaderIcon } from "lucide-react";
@@ -116,24 +114,34 @@ export default function VGPage() {
           <p className="font-semibold text-primary">Instructions</p>
           <ul className="list-disc list-inside text-sm">
             <li>
-              Be as specific as possible about your tastes and preferences.
+              Be as specific as possible about your tastes and preferences. The
+              more details you provide, the more personalized your suggestions
+              will be.
             </li>
-            <li>Separate your preferences by points (.)</li>
-            <li>The limit is 180 characters.</li>
+            <li>Separate each of your preferences by a full stop (.).</li>
             <li>
-              Do not mention anything about spaces or symbols, this is only
-              filled in the required fields.
+              Do not mention any preferences for spaces or symbols in your text,
+              use the checkboxes below for that.
             </li>
+            <li>Maximum of 180 characters.</li>
             <li>
-              Inappropriate or offensive words or topics are not accepted in any
-              language.
+              Inappropriate or offensive words/slangs and topics are not
+              accepted in any language.
             </li>
-            <li>
-              For example: I like the dogs. I enjoy playing games on the
-              internet like Red Dead Redemption. I love football and my favorite
-              player is Messi.
-            </li>
+            <li>The suggested language is English.</li>
           </ul>
+          <div className="text-sm">
+            <p>
+              <span className="text-primary">SPECIFIC EXAMPLE:</span> I love
+              dogs and I have a beautiful labrador named Sally. I play
+              videogames and I love Super Mario. I used to play soccer in high
+              school and my favorite player is Messi. (168 characters)
+            </p>
+            <p>
+              <span className="text-primary">NON-SPECIFIC EXAMPLE:</span> I love
+              dogs, videogames, and soccer. (36 characters)
+            </p>
+          </div>
         </div>
         <form
           className="max-w-xl w-full flex flex-col items-center space-y-2"
@@ -171,7 +179,7 @@ export default function VGPage() {
               />
               <label
                 htmlFor="symbols"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
                 Include symbols
               </label>
@@ -184,7 +192,7 @@ export default function VGPage() {
               />
               <label
                 htmlFor="spaces"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
                 Include spaces
               </label>
