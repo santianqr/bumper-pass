@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import * as puppeteer from "puppeteer";
-//import chromium from "chrome-aws-lambda";
+
+let browser: puppeteer.Browser | null = null;
 
 const symbolMap: { [key: string]: string } = {
   "❤": "heart",
@@ -20,16 +21,20 @@ const replaceSymbols = (text: string) => {
 export const POST = async (request: Request) => {
   try {
     const body = await request.json();
-
-    const browser = await puppeteer.launch({ headless: "new" });
-    //const browser = await puppeteer.launch({ headless: false, slowMo: 50 });
-
+    if (!browser) {
+      browser = await puppeteer.launch({
+        headless: "new",
+        args: ["--no-sandbox"],
+        executablePath: "/usr/bin/chromium",
+      });
+      //browser = await puppeteer.launch({ headless: false, slowMo: 50 });
+    }
     const [page] = await browser.pages(); // Usa la primera pestaña abierta
 
     // Desactivar la carga de hojas de estilo
     await page.setRequestInterception(true);
     page.on("request", (request) => {
-      if (request.isNavigationRequest()) {
+      if (!request.isInterceptResolutionHandled()) {
         if (request.resourceType() === "stylesheet") {
           request.abort();
         } else {
@@ -84,20 +89,16 @@ export const POST = async (request: Request) => {
 
     await page.waitForNavigation({ waitUntil: "networkidle0" });
     const spanElement = await page.$(".progress__tooltip");
-    if (spanElement !== null) {
-      const spanText = await spanElement.getProperty("textContent");
-      if (spanText !== undefined) {
-        const text = await spanText.jsonValue();
-        if (text === "Progress: 30%") {
-          return NextResponse.json({ message: "OK", status: 200 });
-        } else {
-          return NextResponse.json({ message: "NO", status: 200 });
-        }
-      } else {
-        // Manejar el caso en que spanText es undefined
-      }
-    } else {
+    if (spanElement === null) {
       return NextResponse.json({ message: "NO", status: 200 });
+    } else {
+      const spanText = await spanElement.getProperty("textContent");
+      const text = await spanText.jsonValue();
+      if (text === "Progress: 30%") {
+        return NextResponse.json({ message: "OK", status: 200 });
+      } else {
+        return NextResponse.json({ message: "NO", status: 200 });
+      }
     }
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
