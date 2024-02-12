@@ -24,7 +24,8 @@ export const POST = async (request: Request) => {
     if (!browser) {
       browser = await puppeteer.launch({
         headless: "new",
-        args: ["--no-sandbox"],
+
+        args: ["--no-sandbox", "--disable-setuid-sandbox"],
         executablePath: "/usr/bin/chromium",
       });
       //browser = await puppeteer.launch({ headless: false, slowMo: 50 });
@@ -102,5 +103,9 @@ export const POST = async (request: Request) => {
     }
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
+  } finally {
+    if (browser) {
+      await browser.close();
+    }
   }
 };
