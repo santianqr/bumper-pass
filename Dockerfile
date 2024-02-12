@@ -4,8 +4,6 @@ WORKDIR /app
 
 COPY package*.json ./
 
-
-
 RUN apt-get update && apt-get install -y \
     ca-certificates \
     fonts-liberation \
@@ -45,7 +43,6 @@ RUN apt-get update && apt-get install -y \
     wget \
     xdg-utils \
     chromium # Añadir Chromium aquí
-
 
 RUN npm install
 
