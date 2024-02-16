@@ -20,7 +20,8 @@ const config = {
     },
     extend: {
       fontFamily: {
-        sans: ["var(--font-sans)", ...fontFamily.sans],
+        maven: ["var(--font-maven)", ...fontFamily.sans],
+        serif: ["var(--font-serif)", ...fontFamily.serif],
       },
 
       colors: {
