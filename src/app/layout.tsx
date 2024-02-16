@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { TRPCReactProvider } from "@/trpc/react";
 import { ThemeProvider } from "@/components/theme-provider";
 import Header from "@/components/header";
+import Footer from "@/components/footer";
 
 const fontMaven = Maven_Pro({
   subsets: ["latin"],
@@ -32,7 +33,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          "font-maven relative flex min-h-screen flex-col bg-background antialiased",
+          "relative flex min-h-screen flex-col bg-background font-maven antialiased",
           fontMaven.variable,
         )}
       >
@@ -45,6 +46,7 @@ export default function RootLayout({
           >
             <Header />
             {children}
+            <Footer />
           </ThemeProvider>
         </TRPCReactProvider>
       </body>
