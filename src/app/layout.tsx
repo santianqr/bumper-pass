@@ -4,6 +4,7 @@ import { Maven_Pro, Source_Serif_4, Inter as FontSans } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { TRPCReactProvider } from "@/trpc/react";
 import { ThemeProvider } from "@/components/theme-provider";
+import Header from "@/components/header";
 
 const fontMaven = Maven_Pro({
   subsets: ["latin"],
@@ -31,7 +32,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          "min-h-screen bg-background font-maven antialiased",
+          "font-maven relative flex min-h-screen flex-col bg-background antialiased",
           fontMaven.variable,
         )}
       >
@@ -42,6 +43,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <Header />
             {children}
           </ThemeProvider>
         </TRPCReactProvider>
