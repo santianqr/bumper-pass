@@ -26,22 +26,27 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 
 const FormSchema = z.object({
-  email: z
+  vehicleType: z
     .string({
-      required_error: "Please select an email to display.",
+      required_error: "Please select a valid option.",
     })
-    .email(),
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
+    .refine((value) => value === "AUTO" || value === "MOTO", {
+      message: "Vehicle type must be either 'auto' or 'motorcycle'.",
+    }),
+
+  plate: z
+    .string()
+    .min(3, {
+      message: "Plates must be at least 3 characters.",
+    })
+    .max(7, {
+      message: "Plates must be at most 7 characters.",
+    }),
 });
 
 export default function SearchSection() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      username: "matt",
-    }
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
@@ -67,7 +72,7 @@ export default function SearchSection() {
         >
           <FormField
             control={form.control}
-            name="email"
+            name="vehicleType"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Email</FormLabel>
@@ -95,21 +100,21 @@ export default function SearchSection() {
             )}
           />
           <FormField
-          control={form.control}
-          name="username"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Username</FormLabel>
-              <FormControl>
-                <Input placeholder="shadcn" {...field} />
-              </FormControl>
-              <FormDescription>
-                This is your public display name.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+            control={form.control}
+            name="plate"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Username</FormLabel>
+                <FormControl>
+                  <Input placeholder="shadcn" {...field} />
+                </FormControl>
+                <FormDescription>
+                  This is your public display name.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <Button type="submit">Submit</Button>
         </form>
       </Form>
