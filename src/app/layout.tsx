@@ -4,6 +4,7 @@ import { Maven_Pro, Source_Serif_4, Inter as FontSans } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { TRPCReactProvider } from "@/trpc/react";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/toaster";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 
@@ -46,6 +47,7 @@ export default function RootLayout({
           >
             <Header />
             {children}
+            <Toaster />
             <Footer />
           </ThemeProvider>
         </TRPCReactProvider>
