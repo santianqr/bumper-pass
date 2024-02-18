@@ -102,7 +102,14 @@ export default function SearchSection() {
               <FormItem>
                 <FormLabel>What is the plate of your dreams?</FormLabel>
                 <FormControl>
-                  <Input placeholder="Please type your plate" {...field} />
+                  <Input
+                    placeholder="Please type your plate"
+                    {...field}
+                    onChange={(e) => {
+                      e.target.value = e.target.value.toUpperCase();
+                      field.onChange(e);
+                    }}
+                  />
                 </FormControl>
                 <FormDescription></FormDescription>
                 <FormMessage />
