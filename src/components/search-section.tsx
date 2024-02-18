@@ -4,6 +4,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { HandIcon, HeartIcon, StarIcon, PlusIcon } from "@radix-ui/react-icons";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -66,10 +67,7 @@ export default function SearchSection() {
         Search Now!
       </h2>
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="w-2/3 space-y-6"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
           <FormField
             control={form.control}
             name="vehicleType"
@@ -101,6 +99,21 @@ export default function SearchSection() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>What is the plate of your dreams?</FormLabel>
+                <div className="flex space-x-2">
+                  <HandIcon
+                    onClick={() => field.onChange(field.value + "🖐")}
+                    className="cursor-pointer"
+                  />
+                  <HeartIcon
+                    onClick={() => field.onChange(field.value + "❤")}
+                  />
+                  <StarIcon
+                    onClick={() => field.onChange(field.value + "⭐")}
+                  />
+                  <PlusIcon
+                    onClick={() => field.onChange(field.value + "➕")}
+                  />
+                </div>
                 <FormControl>
                   <Input
                     placeholder="Please type your plate"
