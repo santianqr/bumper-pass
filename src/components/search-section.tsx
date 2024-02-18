@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 
 const FormSchema = z.object({
@@ -30,11 +31,17 @@ const FormSchema = z.object({
       required_error: "Please select an email to display.",
     })
     .email(),
+  username: z.string().min(2, {
+    message: "Username must be at least 2 characters.",
+  }),
 });
 
 export default function SearchSection() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
+    defaultValues: {
+      username: "matt",
+    }
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
@@ -87,6 +94,22 @@ export default function SearchSection() {
               </FormItem>
             )}
           />
+          <FormField
+          control={form.control}
+          name="username"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Username</FormLabel>
+              <FormControl>
+                <Input placeholder="shadcn" {...field} />
+              </FormControl>
+              <FormDescription>
+                This is your public display name.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
           <Button type="submit">Submit</Button>
         </form>
       </Form>
