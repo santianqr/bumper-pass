@@ -26,6 +26,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 
+const emojis = ["🖐", "❤", "⭐", "➕"];
+
 const FormSchema = z.object({
   vehicleType: z
     .string({
@@ -37,17 +39,36 @@ const FormSchema = z.object({
 
   plate: z
     .string()
-    .min(3, {
-      message: "Plates must be at least 3 characters.",
+    .min(2, {
+      message: "Plates must be at least 2 characters.",
     })
     .max(7, {
       message: "Plates must be at most 7 characters.",
+    })
+    .refine((value) => !value.includes("0"), {
+      message: "The plate cannot contain the number 0.",
+    })
+    .refine(
+      (value) => emojis.filter((emoji) => value.includes(emoji)).length <= 1,
+      {
+        message: "The plate cannot contain more than one emoji.",
+      },
+    )
+    .refine((value) => !value.includes("//"), {
+      message: "The plate cannot contain consecutive half spaces.",
+    })
+    .refine((value) => /^[a-zA-Z1-9🖐❤⭐➕/ ]*$/.test(value), {
+      message:
+        "The plate can only contain letters from the American alphabet, numbers from 1 to 9, one of the four emojis, spaces or half spaces.",
     }),
 });
 
 export default function SearchSection() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
+    defaultValues: {
+      plate: "",
+    },
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
@@ -99,21 +120,7 @@ export default function SearchSection() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>What is the plate of your dreams?</FormLabel>
-                <div className="flex space-x-2">
-                  <HandIcon
-                    onClick={() => field.onChange(field.value + "🖐")}
-                    className="cursor-pointer"
-                  />
-                  <HeartIcon
-                    onClick={() => field.onChange(field.value + "❤")}
-                  />
-                  <StarIcon
-                    onClick={() => field.onChange(field.value + "⭐")}
-                  />
-                  <PlusIcon
-                    onClick={() => field.onChange(field.value + "➕")}
-                  />
-                </div>
+
                 <FormControl>
                   <Input
                     placeholder="Please type your plate"
@@ -124,7 +131,24 @@ export default function SearchSection() {
                     }}
                   />
                 </FormControl>
-                <FormDescription></FormDescription>
+                <FormDescription className="flex space-x-2">
+                  <HandIcon
+                    onClick={() => field.onChange(field.value + "🖐")}
+                    className="cursor-pointer"
+                  />
+                  <HeartIcon
+                    onClick={() => field.onChange(field.value + "❤")}
+                    className="cursor-pointer"
+                  />
+                  <StarIcon
+                    onClick={() => field.onChange(field.value + "⭐")}
+                    className="cursor-pointer"
+                  />
+                  <PlusIcon
+                    onClick={() => field.onChange(field.value + "➕")}
+                    className="cursor-pointer"
+                  />
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
