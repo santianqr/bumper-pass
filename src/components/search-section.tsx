@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { HandIcon, HeartIcon, StarIcon, PlusIcon } from "@radix-ui/react-icons";
+import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -131,7 +132,9 @@ export default function SearchSection() {
                     }}
                   />
                 </FormControl>
-                <FormDescription className="flex space-x-2">
+
+                <FormDescription className="flex items-center space-x-2">
+                  <span>Insert symbol</span>
                   <HandIcon
                     onClick={() => field.onChange(field.value + "🖐")}
                     className="cursor-pointer"
@@ -149,11 +152,19 @@ export default function SearchSection() {
                     className="cursor-pointer"
                   />
                 </FormDescription>
+                <FormDescription>
+                  <span className={cn("text-[0.8rem] text-muted-foreground")}>
+                    *Only certian specific types of plates allow including
+                    symbols
+                  </span>
+                </FormDescription>
+
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button type="submit">Submit</Button>
+          <Button type="submit">Search</Button>
+          <Button type="submit">Clear</Button>
         </form>
       </Form>
     </section>
