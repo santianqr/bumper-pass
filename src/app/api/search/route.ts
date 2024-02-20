@@ -24,7 +24,7 @@ interface Body {
 export async function POST(req: NextRequest) {
   let browser: puppeteer.Browser | undefined;
   try {
-    const body = await req.json();
+    const body: Body = await req.json();
     if (
       typeof body.vehicleType !== "string" ||
       typeof body.personalizedPlate !== "string"
@@ -34,7 +34,6 @@ export async function POST(req: NextRequest) {
         { status: 400 },
       );
     }
-    const typedBody: Body = body;
     // Inicia una nueva instancia del navegador
     const browser = await puppeteer.launch({
       headless: false,
@@ -60,7 +59,7 @@ export async function POST(req: NextRequest) {
       console.log("El segundo botón no existe");
 
     await page.waitForNavigation({ waitUntil: "networkidle0" });
-    await page.select("select#vehicleType", typedBody.vehicleType.toUpperCase());
+    await page.select("select#vehicleType", body.vehicleType.toUpperCase());
     await page.type("input#licPlateReplaced", "06405k2");
     await page.type("input#last3Vin", "802");
     await page.click("label[for=isRegExpire60N]");
@@ -68,7 +67,7 @@ export async function POST(req: NextRequest) {
     const symbols = ["❤", "⭐", "🖐", "➕"];
     let hasSymbol = false;
     for (const symbol of symbols) {
-      if (typedBody.personalizedPlate.includes(symbol)) {
+      if (body.personalizedPlate.includes(symbol)) {
         hasSymbol = true;
         await page.click(`label[for=plate_type_K]`);
         const symbolValue = symbolMap[symbol];
@@ -88,7 +87,7 @@ export async function POST(req: NextRequest) {
 
     await page.waitForNavigation({ waitUntil: "networkidle0" });
 
-    let modifiedPlate = replaceSymbols(typedBody.personalizedPlate);
+    let modifiedPlate = replaceSymbols(body.personalizedPlate);
     modifiedPlate = modifiedPlate.padEnd(7, " ");
 
     for (let i = 0; i < 7; i++) {
