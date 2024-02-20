@@ -19,7 +19,6 @@ const replaceSymbols = (text: string) => {
 interface Body {
   vehicleType: string;
   personalizedPlate: string;
-  // otros campos necesarios...
 }
 
 export async function POST(req: NextRequest) {
@@ -104,11 +103,11 @@ export async function POST(req: NextRequest) {
     await page.waitForNavigation({ waitUntil: "networkidle0" });
     const spanElement = await page.$(".progress__tooltip");
 
-    const cookies = await page.cookies();
-    const cookiesString = cookies
-      .map((cookie) => `${cookie.name}=${cookie.value}`)
-      .join("; ");
-    console.log(cookiesString);
+    //const cookies = await page.cookies();
+    //const cookiesString = cookies
+    //  .map((cookie) => `${cookie.name}=${cookie.value}`)
+    //  .join("; ");
+    //console.log(cookiesString);
 
     console.log(spanElement);
 
