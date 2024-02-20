@@ -26,6 +26,15 @@ export async function POST(req: NextRequest) {
   let browser: puppeteer.Browser | undefined;
   try {
     const body: Body = await req.json();
+    if (
+      typeof body.vehicleType !== "string" ||
+      typeof body.personalizedPlate !== "string"
+    ) {
+      return NextResponse.json(
+        { error: "Los campos vehicleType y personalizedPlate son requeridos" },
+        { status: 400 },
+      );
+    }
     // Inicia una nueva instancia del navegador
     const browser = await puppeteer.launch({
       headless: false,
