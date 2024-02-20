@@ -22,6 +22,7 @@ interface Body {
   personalizedPlate: string;
 }
 
+let page: puppeteer.Page | undefined;
 let browser: puppeteer.Browser | undefined;
 
 export async function POST(req: NextRequest) {
@@ -33,16 +34,21 @@ export async function POST(req: NextRequest) {
         { status: 400 },
       );
     }
-    // Inicia una nueva instancia del navegador
     if (!browser) {
       browser = await puppeteer.launch({
         headless: false,
-        slowMo: 1,
-        args: ["--no-sandbox", "--disable-setuid-sandbox"],
+        slowMo: 50,
+        //executablePath: "/usr/bin/chromium",
+        args: [
+          "--no-sandbox",
+          "--disable-setuid-sandbox",
+          "--disable-dev-shm-usage",
+          "--disable-gpu",
+        ],
       });
     }
 
-    const page = (await browser.pages())[0];
+    page = (await browser.pages())[0] ?? (await browser.newPage());
 
     if (!page) {
       console.log("There are no open pages");
@@ -131,10 +137,6 @@ export async function POST(req: NextRequest) {
         { error: "An unknown error occurred. Please try again later" },
         { status: 500 },
       );
-    }
-  } finally {
-    if (browser) {
-      await browser.close();
     }
   }
 }
