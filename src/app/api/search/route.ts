@@ -22,8 +22,9 @@ interface Body {
   personalizedPlate: string;
 }
 
+let browser: puppeteer.Browser | undefined;
+
 export async function POST(req: NextRequest) {
-  let browser: puppeteer.Browser | undefined;
   try {
     const body = (await req.json()) as Body;
     if (!("vehicleType" in body) || !("personalizedPlate" in body)) {
@@ -33,12 +34,14 @@ export async function POST(req: NextRequest) {
       );
     }
     // Inicia una nueva instancia del navegador
-    const browser = await puppeteer.launch({
-      headless: false,
-      slowMo: 50,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    });
-
+    if (!browser) { 
+       browser = await puppeteer.launch({
+        headless: false,
+        slowMo: 1,
+        args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      });
+    }
+    
     const page = (await browser.pages())[0];
 
     if (!page) {
