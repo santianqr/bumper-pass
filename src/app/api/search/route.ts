@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import * as puppeteer from "puppeteer";
 
 const symbolMap: Record<string, string> = {
@@ -24,11 +25,8 @@ interface Body {
 export async function POST(req: NextRequest) {
   let browser: puppeteer.Browser | undefined;
   try {
-    const body: Body = await req.json();
-    if (
-      typeof body.vehicleType !== "string" ||
-      typeof body.personalizedPlate !== "string"
-    ) {
+    const body = (await req.json()) as Body;
+    if (!("vehicleType" in body) || !("personalizedPlate" in body)) {
       return NextResponse.json(
         { error: "Los campos vehicleType y personalizedPlate son requeridos" },
         { status: 400 },
