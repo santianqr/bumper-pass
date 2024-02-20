@@ -29,26 +29,26 @@ export async function POST(req: NextRequest) {
     const body = (await req.json()) as Body;
     if (!("vehicleType" in body) || !("personalizedPlate" in body)) {
       return NextResponse.json(
-        { error: "Los campos vehicleType y personalizedPlate son requeridos" },
+        { error: "Fields 'vehicleType' and 'personalizedPlate' are required" },
         { status: 400 },
       );
     }
     // Inicia una nueva instancia del navegador
-    if (!browser) { 
-       browser = await puppeteer.launch({
+    if (!browser) {
+      browser = await puppeteer.launch({
         headless: false,
         slowMo: 1,
         args: ["--no-sandbox", "--disable-setuid-sandbox"],
       });
     }
-    
+
     const page = (await browser.pages())[0];
 
     if (!page) {
-      console.log("No hay ninguna página abierta");
+      console.log("There are no open pages");
       return NextResponse.json(
-        { error: "Ninguna página abierta" },
-        { status: 500 },
+        { error: "The requested service is currently unavailable" },
+        { status: 503 },
       );
     }
 
@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
     });
     await page.click("input#agree");
     (await page.$$("button"))[1]?.click() ??
-      console.log("El segundo botón no existe");
+      console.log("The button does not exist");
 
     await page.waitForNavigation({ waitUntil: "networkidle0" });
     await page.select("select#vehicleType", body.vehicleType.toUpperCase());
@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
     }
 
     (await page.$$("button"))[1]?.click() ??
-      console.log("El segundo botón no existe");
+      console.log("The button does not exist");
 
     await page.waitForNavigation({ waitUntil: "networkidle0" });
 
@@ -95,11 +95,11 @@ export async function POST(req: NextRequest) {
       const character = modifiedPlate[i];
       character
         ? await page.type(`input#plateChar${i}`, character)
-        : console.log(`El carácter en la posición ${i} no está definido`);
+        : console.log(`The char in ${i} position is not defined`);
     }
 
     (await page.$$("button"))[1]?.click() ??
-      console.log("El segundo botón no existe");
+      console.log("The button does not exist");
 
     await page.waitForNavigation({ waitUntil: "networkidle0" });
     const spanElement = await page.$(".progress__tooltip");
@@ -110,7 +110,7 @@ export async function POST(req: NextRequest) {
     //  .join("; ");
     //console.log(cookiesString);
 
-    console.log(spanElement);
+    //console.log(spanElement);
 
     if (spanElement === null) {
       return NextResponse.json({ message: "NO", status: 200 });
@@ -128,7 +128,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: e.message }, { status: 500 });
     } else {
       return NextResponse.json(
-        { error: "An unknown error occurred" },
+        { error: "An unknown error occurred. Please try again later" },
         { status: 500 },
       );
     }
