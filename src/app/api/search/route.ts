@@ -1,7 +1,7 @@
-import {  NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import * as puppeteer from "puppeteer";
 
-const symbolMap: { [key: string]: string } = {
+const symbolMap: Record<string, string> = {
   "❤": "heart",
   "⭐": "star",
   "🖐": "hand",
@@ -16,10 +16,16 @@ const replaceSymbols = (text: string) => {
   return newText;
 };
 
-export async function POST(req: Request) {
+interface Body {
+  vehicleType: string;
+  personalizedPlate: string;
+  // otros campos necesarios...
+}
+
+export async function POST(req: NextRequest) {
   let browser: puppeteer.Browser | undefined;
   try {
-    const body = await req.json();
+    const body: Body = await req.json();
     // Inicia una nueva instancia del navegador
     const browser = await puppeteer.launch({
       headless: false,
@@ -108,8 +114,15 @@ export async function POST(req: Request) {
         return NextResponse.json({ message: "NO", status: 200 });
       }
     }
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      return NextResponse.json({ error: e.message }, { status: 500 });
+    } else {
+      return NextResponse.json(
+        { error: "An unknown error occurred" },
+        { status: 500 },
+      );
+    }
   } finally {
     if (browser) {
       await browser.close();
