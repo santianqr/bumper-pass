@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import {  NextResponse } from "next/server";
 import * as puppeteer from "puppeteer";
 
 const symbolMap: { [key: string]: string } = {
@@ -16,7 +16,7 @@ const replaceSymbols = (text: string) => {
   return newText;
 };
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   let browser: puppeteer.Browser | undefined;
   try {
     const body = await req.json();
