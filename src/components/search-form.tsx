@@ -81,6 +81,13 @@ export default function SearchForm() {
       ),
     });
   }
+
+  function onClear() {
+    form.reset({
+      plate: "",
+    });
+  }
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
@@ -153,8 +160,19 @@ export default function SearchForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Search</Button>
-        <Button type="submit">Clear</Button>
+        <div className="flex justify-center space-x-8">
+          <Button type="submit" className="rounded-3xl">
+            Search
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="rounded-3xl"
+            onClick={onClear}
+          >
+            Clear
+          </Button>
+        </div>
       </form>
     </Form>
   );
