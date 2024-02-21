@@ -1,4 +1,4 @@
-FROM node:18
+FROM node:18-slim
 
 RUN apt-get update && apt-get install -y \
     chromium \
@@ -6,7 +6,6 @@ RUN apt-get update && apt-get install -y \
     libgconf-2-4 \
     libfontconfig1 \
     && rm -rf /var/lib/apt/lists/*
-
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
