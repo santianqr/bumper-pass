@@ -7,7 +7,11 @@ import {
 } from "@/server/api/trpc";
 
 const SearchInput = z.object({
-  vehicleType: z.enum(["AUTO", "MOTO"]),
+  vehicleType: z
+    .string()
+    .refine((value) => value === "AUTO" || value === "MOTO", {
+      message: "Vehicle type must be either 'auto' or 'motorcycle'.",
+    }),
   plate: z.string(),
 });
 

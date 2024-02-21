@@ -5,6 +5,9 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { HandIcon, HeartIcon, StarIcon, PlusIcon } from "@radix-ui/react-icons";
 import { cn } from "@/lib/utils";
+import { Loader } from "lucide-react";
+//import { api } from "@/trpc/server";
+//import { unstable_noStore as noStore } from "next/cache";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -25,8 +28,13 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
+import { useState } from "react";
 
 const emojis = ["🖐", "❤", "⭐", "➕"];
+
+function countSymbols(s: string) {
+  return [...s].length;
+}
 
 const FormSchema = z.object({
   vehicleType: z
@@ -37,12 +45,12 @@ const FormSchema = z.object({
       message: "Vehicle type must be either 'auto' or 'motorcycle'.",
     }),
 
-  plate: z
+  personalizedPlate: z
     .string()
-    .min(2, {
+    .refine((value) => countSymbols(value) >= 2, {
       message: "Plates must be at least 2 characters.",
     })
-    .max(7, {
+    .refine((value) => countSymbols(value) <= 7, {
       message: "Plates must be at most 7 characters.",
     })
     .refine((value) => !value.includes("0"), {
@@ -63,15 +71,37 @@ const FormSchema = z.object({
     }),
 });
 
+type ResponseData = {
+  message: string;
+  status: number;
+};
+
 export default function SearchForm() {
+  const [res, setRes] = useState<ResponseData | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      plate: "",
+      personalizedPlate: "",
     },
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+    setIsLoading(true);
+
+    //const response = await api.search.searchPlate.query(data);
+    const response: Response = await fetch("/api/search", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data, null, 2),
+    });
+
+    const resP: ResponseData = (await response.json()) as ResponseData;
+    setRes(resP);
+
     toast({
       title: "You submitted the following values:",
       description: (
@@ -80,11 +110,12 @@ export default function SearchForm() {
         </pre>
       ),
     });
+    setIsLoading(false);
   }
 
   function onClear() {
     form.reset({
-      plate: "",
+      personalizedPlate: "",
     });
   }
 
@@ -115,7 +146,7 @@ export default function SearchForm() {
         />
         <FormField
           control={form.control}
-          name="plate"
+          name="personalizedPlate"
           render={({ field }) => (
             <FormItem>
               <FormLabel>What is the plate of your dreams?</FormLabel>
@@ -162,7 +193,7 @@ export default function SearchForm() {
         />
         <div className="flex justify-center space-x-8">
           <Button type="submit" className="rounded-3xl">
-            Search
+            {isLoading ? <Loader className="animate-spin" /> : "Search"}
           </Button>
           <Button
             type="button"
@@ -172,6 +203,12 @@ export default function SearchForm() {
           >
             Clear
           </Button>
+          {res && (
+            <p>
+              The plate is{" "}
+              {res.message === "OK" ? "available" : "not available"}.
+            </p>
+          )}
         </div>
       </form>
     </Form>
