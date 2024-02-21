@@ -1,6 +1,6 @@
 import "@/styles/globals.css";
 
-import { Maven_Pro, Source_Serif_4, Inter as FontSans } from "next/font/google";
+import { Maven_Pro, Source_Serif_4 } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { TRPCReactProvider } from "@/trpc/react";
 import { ThemeProvider } from "@/components/theme-provider";
