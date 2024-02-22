@@ -55,7 +55,7 @@ export default function SearchSection() {
             alt="bumperpass_plate"
           />
           <p
-            className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[30%] transform font-serif text-2xl -tracking-tighter text-[#8C14104] font-semibold`}
+            className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[30%] transform font-serif text-2xl -tracking-tighter text-black/80  font-semibold`}
           >
             BM3RP4SS
           </p>
