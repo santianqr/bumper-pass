@@ -1,25 +1,39 @@
-FROM node:18-slim
+# Usamos la imagen base de Node.js con Alpine
+FROM node:18-alpine
 
-RUN apt-get update && apt-get install -y \
-    chromium \
-    libnss3 \
-    libgconf-2-4 \
-    libfontconfig1 \
-    && rm -rf /var/lib/apt/lists/*
-
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
-
+# Establecemos el directorio de trabajo
 WORKDIR /app
 
+# Copiamos los archivos de paquetes
 COPY package*.json ./
 
-RUN npm install
+# Instalamos las dependencias del proyecto
+RUN apk add --no-cache \
+    chromium \
+    nss \
+    freetype \
+    freetype-dev \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont \
+    nodejs \
+    yarn \
+    # Configuramos las variables de entorno para Puppeteer
+    && export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    && export PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser \
+    # Instalamos las dependencias del proyecto
+    && yarn install --frozen-lockfile \
+    # Limpiamos el caché de apk para reducir el tamaño de la imagen
+    && rm -rf /var/cache/apk/*
 
+# Copiamos el resto de los archivos del proyecto
 COPY . .
 
-RUN npm run build
+# Construimos la aplicación
+RUN yarn build
 
+# Exponemos el puerto 3000
 EXPOSE 3000
 
-CMD ["npm", "run", "start"]
+# Ejecutamos la aplicación
+CMD ["yarn", "start"]
