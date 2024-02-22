@@ -1,9 +1,57 @@
+import { SearchCheck, Lightbulb } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
 export default function ServicesSection() {
   return (
-    <section>
-      <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0">
-        Services
-      </h2>
+    <section className="border-t-2 border-[#E62534]">
+      <div className="mx-auto w-40 rounded-b-lg bg-[#E62534] p-2">
+        <h2 className="scroll-m-20 text-center text-3xl font-semibold tracking-tight text-[#FFFFFF] first:mt-0">
+          Services
+        </h2>
+      </div>
+      <div className="grid grid-cols-2 gap-4 justify-items-center">
+        <div className="flex flex-col items-center space-y-4 max-w-xs justify-between">
+          <div className="flex h-[75px] w-[75px] items-center justify-center rounded-full bg-primary bg-gradient-to-r from-[#E62534] to-[#F59F0F] p-1 text-[#FFFFFF]">
+            <SearchCheck size={60} />
+          </div>
+          <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+            Free Search
+          </h3>
+          <div className="space-y-2 text-sm">
+            <p>
+              With our innovate online custom license plate search service, you
+              can conduct searches efficiently and hassle-free! With us, you can
+              explore multiple options, optimizing your time.
+            </p>
+            <p>
+              Once you find the perfect plate for you, well send you directly to
+              the purchase site, so you can place your order in minutes.
+            </p>
+          </div>
+          <Button type="submit" className="rounded-3xl bg-[#E62534]">
+            Make a search
+          </Button>
+        </div>
+        <div className="flex flex-col items-center space-y-4 max-w-xs">
+          <div className="flex h-[75px] w-[75px] items-center justify-center rounded-full bg-primary bg-gradient-to-r from-[#E62534] to-[#F59F0F] p-1 text-[#FFFFFF]">
+            <Lightbulb size={60} />
+          </div>
+          <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+            Variation Generator
+          </h3>
+          <div className="space-y-2 text-sm">
+            <p>
+              With this revolutionary service, youll discover the most creative
+              way to customize your license plates! get creative and unique
+              suggestions for your plate, generated based on your style,
+              personality and interests.
+            </p>
+          </div>
+          <Button type="submit" className="rounded-3xl bg-[#F59F0F]">
+            Learn more
+          </Button>
+        </div>
+      </div>
     </section>
   );
 }

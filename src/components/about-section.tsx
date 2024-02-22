@@ -2,12 +2,12 @@ import Image from "next/image";
 
 export default function AboutSection() {
   return (
-    <section className="grid grid-cols-2 content-center justify-items-center gap-4 space-y-8">
+    <section className="grid grid-cols-2 items-center justify-items-center gap-4 space-y-8">
       <h2 className="col-span-2 scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0">
         About us
       </h2>
 
-      <div className="text-sm">
+      <div className="space-y-4 text-sm">
         <p>
           We are excited to provide you a unique experience to express your
           style and personality on the road. Your vehicle deserves more than
