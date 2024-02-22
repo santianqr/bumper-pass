@@ -5,8 +5,8 @@ import Link from "next/link";
 
 export default function SearchSection() {
   return (
-    <section className="mx-auto grid grid-cols-2 content-center justify-items-center gap-4 space-y-8">
-      <h2 className="col-span-2 scroll-m-20 text-center text-3xl font-semibold tracking-tight first:mt-0">
+    <section className="grid grid-cols-2 content-center justify-items-center gap-4 space-y-8">
+      <h2 className="col-span-2 scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0">
         Search Now!
       </h2>
       <Card className="flex max-h-80 max-w-sm items-center">
@@ -55,7 +55,7 @@ export default function SearchSection() {
             alt="bumperpass_plate"
           />
           <p
-            className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[30%] transform font-serif text-2xl -tracking-tighter text-secondary `}
+            className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[30%] transform font-serif text-2xl -tracking-tighter text-black font-semibold`}
           >
             BM3RP4SS
           </p>

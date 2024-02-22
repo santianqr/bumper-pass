@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import { ModeToggle } from "@/components/mode-toggle";
 
 const fontMaven = Maven_Pro({
   subsets: ["latin"],
@@ -49,6 +50,7 @@ export default function RootLayout({
             {children}
             <Toaster />
             <Footer />
+            <ModeToggle />
           </ThemeProvider>
         </TRPCReactProvider>
       </body>

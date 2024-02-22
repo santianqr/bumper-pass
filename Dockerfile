@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Instalamos las dependencias del proyecto
-RUN apk add --no-cache \
+RUN apk add -q --update --no-cache \
     chromium \
     nss \
     freetype \
@@ -17,23 +17,23 @@ RUN apk add --no-cache \
     ca-certificates \
     ttf-freefont \
     nodejs \
-    yarn \
-    # Configuramos las variables de entorno para Puppeteer
-    && export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
-    && export PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser \
-    # Instalamos las dependencias del proyecto
-    && yarn install --frozen-lockfile \
-    # Limpiamos el caché de apk para reducir el tamaño de la imagen
-    && rm -rf /var/cache/apk/*
+    npm
+
+# Configuramos las variables de entorno para Puppeteer
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+
+# Instalamos las dependencias del proyecto
+RUN npm install
 
 # Copiamos el resto de los archivos del proyecto
 COPY . .
 
 # Construimos la aplicación
-RUN yarn build
+RUN npm run build
 
 # Exponemos el puerto 3000
 EXPOSE 3000
 
 # Ejecutamos la aplicación
-CMD ["yarn", "start"]
+CMD ["npm", "start"]

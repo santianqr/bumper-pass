@@ -4,7 +4,7 @@ import ServicesSection from "@/components/services-section";
 
 export default function Home() {
   return (
-    <main className="container space-y-20">
+    <main className="container space-y-20 mt-12">
       <SearchSection />
       <AboutSection />
       <ServicesSection />
