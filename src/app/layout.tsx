@@ -3,11 +3,9 @@ import "@/styles/globals.css";
 import { Maven_Pro, Source_Serif_4 } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { TRPCReactProvider } from "@/trpc/react";
-import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
-import { ModeToggle } from "@/components/mode-toggle";
 
 const fontMaven = Maven_Pro({
   subsets: ["latin"],
@@ -40,18 +38,10 @@ export default function RootLayout({
         )}
       >
         <TRPCReactProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
             <Header />
             {children}
             <Toaster />
             <Footer />
-            <ModeToggle />
-          </ThemeProvider>
         </TRPCReactProvider>
       </body>
     </html>
