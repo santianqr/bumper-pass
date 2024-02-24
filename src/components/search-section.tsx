@@ -3,9 +3,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function SearchSection() {
+type Props = {
+  id: string;
+};
+
+
+export default function SearchSection( {id} : Props) {
   return (
-    <section className="grid grid-cols-2 content-center justify-items-center gap-4 space-y-8">
+    <section id={id} className="grid grid-cols-2 content-center justify-items-center gap-4 space-y-8 pt-12">
       <h2 className="col-span-2 scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0">
         Search Now!
       </h2>
