@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Navbar from "@/components/navbar";
-import { CircleUser, ChevronDown } from "lucide-react";
 import Link from "next/link";
+import UserAvatar from "./user-avatar";
 
 export default function Header() {
   return (
@@ -17,10 +17,7 @@ export default function Header() {
         </Link>
         <div className="flex items-center space-x-6">
           <Navbar />
-          <div className="flex items-center">
-            <CircleUser />
-            <ChevronDown size={12} />
-          </div>
+          <UserAvatar />
         </div>
       </div>
     </header>
