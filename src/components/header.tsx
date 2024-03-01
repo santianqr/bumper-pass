@@ -50,7 +50,7 @@ export default function Header() {
             <PopoverTrigger>
               <UserAvatar />
             </PopoverTrigger>
-            <PopoverContent className="w-48 items-center space-y-1">
+            <PopoverContent className="w-48 items-center space-y-1 text-foreground/60">
               {options.map((option, index) => (
                 <Link
                   key={index}

@@ -1,11 +1,12 @@
 import { SearchCheck, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 type Props = {
   id: string;
 };
 
-export default function ServicesSection( {id} : Props) {
+export default function ServicesSection({ id }: Props) {
   return (
     <section id={id} className="space-y-4 border-t-2 border-[#E62534]">
       <div className="mx-auto w-40 rounded-b-lg bg-[#E62534] p-2">
@@ -54,12 +55,14 @@ export default function ServicesSection( {id} : Props) {
               personality and interests.
             </p>
           </div>
-          <Button
-            type="submit"
-            className="rounded-3xl bg-[#F59F0F] hover:bg-[#F59F0F]/90"
-          >
-            Learn more
-          </Button>
+          <Link href="/vg">
+            <Button
+              type="submit"
+              className="rounded-3xl bg-[#F59F0F] hover:bg-[#F59F0F]/90"
+            >
+              Learn more
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
