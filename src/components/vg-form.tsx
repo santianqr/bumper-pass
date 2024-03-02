@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/components/ui/use-toast";
+import { Textarea } from "@/components/ui/textarea";
 
 //const plateLength_options = ["Any", "3", "4", "5", "6", "7"];
 
@@ -38,6 +39,12 @@ const FormSchema = z.object({
   }),
   spaces: z.boolean().default(false),
   symbols: z.boolean().default(false),
+  description: z
+    .string()
+    .min(20, {
+      message: "Type at least 20 characters.",
+    })
+    .max(180, { message: "Type at most 180 characters." }),
 });
 
 export default function VGForm() {
@@ -105,8 +112,8 @@ export default function VGForm() {
                 </FormControl>
                 <SelectContent>
                   <SelectItem value="any">Any</SelectItem>
-                  <SelectItem value="letters">3</SelectItem>
-                  <SelectItem value="numbers">4</SelectItem>
+                  <SelectItem value="letters">Letters</SelectItem>
+                  <SelectItem value="numbers">Numbers</SelectItem>
                 </SelectContent>
               </Select>
               <FormDescription></FormDescription>
@@ -152,6 +159,24 @@ export default function VGForm() {
                   generations.
                 </FormDescription>
               </div>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel></FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Insert your type"
+                  className="resize-none"
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription></FormDescription>
+              <FormMessage />
             </FormItem>
           )}
         />
