@@ -4,12 +4,12 @@ import * as puppeteer from "puppeteer";
 let page: puppeteer.Page | undefined;
 let browser: puppeteer.Browser | undefined;
 
-export async function POST() {
+export async function GET() {
   try {
     if (!browser) {
       browser = await puppeteer.launch({
         headless: false,
-        slowMo: 30,
+        slowMo: 10,
         //headless: true,
         //executablePath: "/usr/bin/chromium",
         args: [

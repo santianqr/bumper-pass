@@ -36,9 +36,9 @@ export async function POST(req: NextRequest) {
     }
     if (!browser) {
       browser = await puppeteer.launch({
-        //headless: false,
-        //slowMo: 50,
-        headless: true,
+        headless: false,
+        slowMo: 5,
+        //headless: true,
         //executablePath: "/usr/bin/chromium",
         args: [
           "--no-sandbox",
@@ -109,14 +109,19 @@ export async function POST(req: NextRequest) {
       console.log("The button does not exist");
 
     await page.waitForNavigation({ waitUntil: "networkidle0" });
+    const spanElement = await page.$(".progress__tooltip");
 
-    const cookies = await page.cookies();
-    const cookiesString = cookies
-      .map((cookie) => `${cookie.name}=${cookie.value}`)
-      .join("; ");
-    console.log(cookiesString);
-
-    return NextResponse.json({ message: cookiesString });
+    if (spanElement === null) {
+      return NextResponse.json({ message: "NO", status: 200 });
+    } else {
+      const spanText = await spanElement.getProperty("textContent");
+      const text = await spanText.jsonValue();
+      if (text === "Progress: 30%") {
+        return NextResponse.json({ message: "OK", status: 200 });
+      } else {
+        return NextResponse.json({ message: "NO", status: 200 });
+      }
+    }
   } catch (e: unknown) {
     if (e instanceof Error) {
       return NextResponse.json({ error: e.message }, { status: 500 });
