@@ -1,10 +1,11 @@
 import Image from "next/image";
-import { Instagram, PhoneCall, Mail } from "lucide-react";
+//import { Instagram, PhoneCall, Mail } from "lucide-react";
+import { Instagram, Mail } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="container mt-20 space-y-8 py-4 border-t-2 border-border/40">
-      <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0 text-center">
+    <footer className="container mt-20 space-y-8 border-t-2 border-border/40 py-4">
+      <h2 className="scroll-m-20 text-center text-3xl font-semibold tracking-tight first:mt-0">
         Contact
       </h2>
       <div className="grid grid-cols-2 justify-items-center gap-4">
@@ -14,10 +15,11 @@ export default function Footer() {
             <Instagram size={36} />
             @Bumperpass
           </div>
-          <div className="flex items-center gap-x-2">
+          {/*<div className="flex items-center gap-x-2">
             <PhoneCall size={36} />
             000-000-0000
-          </div>
+          </div> */}
+
           <div className="flex items-center gap-x-2">
             <Mail size={36} />
             contact@bumperpass.com

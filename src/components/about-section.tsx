@@ -4,9 +4,12 @@ type Props = {
   id: string;
 };
 
-export default function AboutSection({id} : Props) {
+export default function AboutSection({ id }: Props) {
   return (
-    <section id={id} className="grid grid-cols-2 items-center justify-items-center gap-4 space-y-8 pt-14 mb-14">
+    <section
+      id={id}
+      className="mb-14 grid grid-cols-2 items-center justify-items-center gap-4 space-y-8 pt-14"
+    >
       <h2 className="col-span-2 scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0">
         About us
       </h2>

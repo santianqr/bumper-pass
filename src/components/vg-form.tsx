@@ -28,8 +28,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/components/ui/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 
-//const plateLength_options = ["Any", "3", "4", "5", "6", "7"];
-
 const FormSchema = z.object({
   plateLength: z.string({
     required_error: "Please select a valid option.",
@@ -70,118 +68,131 @@ export default function VGForm() {
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-        <FormField
-          control={form.control}
-          name="plateLength"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel></FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+    <section className="mx-auto">
+      {" "}
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="max-w-screen-sm space-y-2 flex flex-col items-stretch"
+        >
+          <FormField
+            control={form.control}
+            name="plateLength"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel></FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select the number of characters" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="any">Any</SelectItem>
+                    <SelectItem value="3">3</SelectItem>
+                    <SelectItem value="4">4</SelectItem>
+                    <SelectItem value="5">5</SelectItem>
+                    <SelectItem value="6">6</SelectItem>
+                    <SelectItem value="7">7</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormDescription></FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="plateType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel></FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select the type of characters" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="any">Any</SelectItem>
+                    <SelectItem value="letters">Letters</SelectItem>
+                    <SelectItem value="numbers">Numbers</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormDescription></FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="spaces"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 shadow">
                 <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select the number of characters" />
-                  </SelectTrigger>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
                 </FormControl>
-                <SelectContent>
-                  <SelectItem value="any">Any</SelectItem>
-                  <SelectItem value="3">3</SelectItem>
-                  <SelectItem value="4">4</SelectItem>
-                  <SelectItem value="5">5</SelectItem>
-                  <SelectItem value="6">6</SelectItem>
-                  <SelectItem value="7">7</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormDescription></FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="plateType"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel></FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>Include spaces?</FormLabel>
+                  <FormDescription>
+                    You can include spaces/half space on your generations.
+                  </FormDescription>
+                </div>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="symbols"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 shadow">
                 <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select the type of characters" />
-                  </SelectTrigger>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
                 </FormControl>
-                <SelectContent>
-                  <SelectItem value="any">Any</SelectItem>
-                  <SelectItem value="letters">Letters</SelectItem>
-                  <SelectItem value="numbers">Numbers</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormDescription></FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="spaces"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
-              <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>Include spaces?</FormLabel>
-                <FormDescription>
-                  You can include spaces on your generations.
-                </FormDescription>
-              </div>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="symbols"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
-              <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>Include symbols?</FormLabel>
-                <FormDescription>
-                  You can include default DMV symbols allowed on your
-                  generations.
-                </FormDescription>
-              </div>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel></FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Insert your type"
-                  className="resize-none"
-                  {...field}
-                />
-              </FormControl>
-              <FormDescription></FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit">Submit</Button>
-      </form>
-    </Form>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>Include symbols?</FormLabel>
+                  <FormDescription>
+                    You can include default DMV symbols allowed on your
+                    generations.
+                  </FormDescription>
+                </div>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel></FormLabel>
+                <FormControl>
+                  <Textarea placeholder="Insert your type" {...field} />
+                </FormControl>
+                <FormDescription></FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button
+            type="submit"
+            className="rounded-3xl bg-[#E62534] hover:bg-[#E62534]/90 self-end"
+          >
+            Generate
+          </Button>
+        </form>
+      </Form>
+    </section>
   );
 }
