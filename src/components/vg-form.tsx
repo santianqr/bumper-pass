@@ -68,12 +68,12 @@ export default function VGForm() {
   }
 
   return (
-    <section className="mx-auto">
+    <section className="">
       {" "}
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="max-w-screen-sm space-y-2 flex flex-col items-stretch"
+          className="max-w-screen-sm space-y-2 flex flex-col items-stretch mx-auto"
         >
           <FormField
             control={form.control}

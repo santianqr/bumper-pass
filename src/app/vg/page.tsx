@@ -2,7 +2,7 @@ import VGForm from "@/components/vg-form";
 
 export default function VGPage() {
   return (
-    <main>
+    <main className="flex flex-col justify-center space-y-8">
       <section className="flex justify-center bg-gradient-to-r from-[#E62534] to-[#F59F0F] py-12 text-background">
         <div className="max-w-screen-sm">
           <p className="text-5xl font-medium tracking-tighter">
@@ -15,8 +15,8 @@ export default function VGPage() {
       </section>
       <section className="flex justify-center">
         <div className="max-w-screen-sm">
-          <p>Instructions</p>
-          <ul className="list-inside list-disc marker:text-foreground/60">
+          <p className="text-lg font-semibold text-primary">Instructions</p>
+          <ul className="list-inside list-disc text-sm marker:text-foreground/60">
             <li>
               Be specific as possible about your style, personality and
               interests to create a unique suggestions for your plate.
