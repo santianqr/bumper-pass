@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
         .min(num_ideas)
         .max(num_ideas)
         .describe(
-          "Array of 5 Unique and creative short text based on user's input, linking topics, ideas, and related data with curious facts",
+          `Array of ${num_ideas} Unique and creative short text based on user's input, linking topics, ideas, and related data with curious facts`,
         ),
     });
 
