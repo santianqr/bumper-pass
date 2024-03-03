@@ -12,8 +12,8 @@ import Link from "next/link";
 
 export default function CarsServices() {
   return (
-    <div className="grid grid-cols-2">
-      <Card>
+    <div className="grid grid-cols-2 gap-4">
+      <Card className="grid max-w-xs grid-cols-1 justify-items-center border-none shadow-none">
         <CardHeader className="flex h-[75px] w-[75px] items-center justify-center rounded-full bg-primary bg-gradient-to-r from-[#E62534] to-[#F59F0F] p-1 text-[#FFFFFF]">
           <SearchCheck size={60} />
         </CardHeader>
@@ -33,15 +33,17 @@ export default function CarsServices() {
         </CardContent>
         <CardDescription></CardDescription>
         <CardFooter>
-          <Button
-            type="submit"
-            className="rounded-3xl bg-[#E62534] hover:bg-[#E62534]/90"
-          >
-            Make a search
-          </Button>
+          <Link href="/#search-now">
+            <Button
+              type="submit"
+              className="rounded-3xl bg-[#E62534] hover:bg-[#E62534]/90"
+            >
+              Make a search
+            </Button>
+          </Link>
         </CardFooter>
       </Card>
-      <Card>
+      <Card className="grid max-w-xs grid-cols-1 justify-items-center border-none shadow-none">
         <CardHeader className="flex h-[75px] w-[75px] items-center justify-center rounded-full bg-primary bg-gradient-to-r from-[#E62534] to-[#F59F0F] p-1 text-[#FFFFFF]">
           <Lightbulb size={60} />
         </CardHeader>
