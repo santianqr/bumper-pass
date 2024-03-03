@@ -1,44 +1,16 @@
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
 import * as puppeteer from "puppeteer";
-
-const symbolMap: Record<string, string> = {
-  "❤": "heart",
-  "⭐": "star",
-  "🖐": "hand",
-  "➕": "plus",
-};
-
-const replaceSymbols = (text: string) => {
-  let newText = text;
-  for (const symbol in symbolMap) {
-    newText = newText.replace(new RegExp(symbol, "g"), "@");
-  }
-  return newText;
-};
-
-interface Body {
-  vehicleType: string;
-  personalizedPlate: string;
-}
 
 let page: puppeteer.Page | undefined;
 let browser: puppeteer.Browser | undefined;
 
-export async function POST(req: NextRequest) {
+export async function POST() {
   try {
-    const body = (await req.json()) as Body;
-    if (!("vehicleType" in body) || !("personalizedPlate" in body)) {
-      return NextResponse.json(
-        { error: "Fields 'vehicleType' and 'personalizedPlate' are required" },
-        { status: 400 },
-      );
-    }
     if (!browser) {
       browser = await puppeteer.launch({
-        //headless: false,
-        //slowMo: 50,
-        headless: true,
+        headless: false,
+        slowMo: 30,
+        //headless: true,
         //executablePath: "/usr/bin/chromium",
         args: [
           "--no-sandbox",
@@ -67,36 +39,18 @@ export async function POST(req: NextRequest) {
       console.log("The button does not exist");
 
     await page.waitForNavigation({ waitUntil: "networkidle0" });
-    await page.select("select#vehicleType", body.vehicleType.toUpperCase());
+    await page.select("select#vehicleType", "AUTO");
     await page.type("input#licPlateReplaced", "06405k2");
     await page.type("input#last3Vin", "802");
     await page.click("label[for=isRegExpire60N]");
     await page.click("label[for=isVehLeasedN]");
-    const symbols = ["❤", "⭐", "🖐", "➕"];
-    let hasSymbol = false;
-    for (const symbol of symbols) {
-      if (body.personalizedPlate.includes(symbol)) {
-        hasSymbol = true;
-        await page.click(`label[for=plate_type_K]`);
-        const symbolValue = symbolMap[symbol];
-        symbolValue
-          ? await page.select("select#kidsPlate", symbolValue)
-          : console.log(`El símbolo ${symbol} no está en symbolMap`);
-        break;
-      }
-    }
-
-    if (!hasSymbol) {
-      await page.click(`label[for=plate_type_R]`);
-    }
-
+    await page.click(`label[for=plate_type_R]`);
     (await page.$$("button"))[1]?.click() ??
       console.log("The button does not exist");
 
     await page.waitForNavigation({ waitUntil: "networkidle0" });
 
-    let modifiedPlate = replaceSymbols(body.personalizedPlate);
-    modifiedPlate = modifiedPlate.padEnd(7, " ");
+    const modifiedPlate = "DONPERR";
 
     for (let i = 0; i < 7; i++) {
       const character = modifiedPlate[i];
@@ -109,14 +63,21 @@ export async function POST(req: NextRequest) {
       console.log("The button does not exist");
 
     await page.waitForNavigation({ waitUntil: "networkidle0" });
+    const spanElement = await page.$(".progress__tooltip");
 
-    const cookies = await page.cookies();
-    const cookiesString = cookies
-      .map((cookie) => `${cookie.name}=${cookie.value}`)
-      .join("; ");
-    console.log(cookiesString);
-
-    return NextResponse.json({ message: cookiesString });
+    if (spanElement === null) {
+      return NextResponse.json({
+        message: "Error, spanELement is null.",
+        status: 200,
+      });
+    } else {
+      const cookies = await page.cookies();
+      const cookiesString = cookies
+        .map((cookie) => `${cookie.name}=${cookie.value}`)
+        .join("; ");
+      console.log(cookiesString);
+      return NextResponse.json({ message: cookiesString });
+    }
   } catch (e: unknown) {
     if (e instanceof Error) {
       return NextResponse.json({ error: e.message }, { status: 500 });
@@ -127,4 +88,23 @@ export async function POST(req: NextRequest) {
       );
     }
   }
+}
+
+{
+  /* 
+para placas con simbolos
+hand
+star
+plus 
+heart
+
+tipo K
+
+poner @ en el simbolo
+
+para placas sin simbolos
+kidsPlate ""
+plate_type_R
+plateNameLow environmental
+*/
 }
