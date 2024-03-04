@@ -17,6 +17,7 @@ type Body = {
   plateType: string;
   spaces: boolean;
   symbols: boolean;
+  used_plates: string[];
 };
 
 export async function POST(req: NextRequest) {
@@ -29,9 +30,11 @@ export async function POST(req: NextRequest) {
     const plateType = body.plateType;
     const spaces = body.spaces;
     const symbols = body.symbols;
+    const used_plates = body.used_plates;
 
     const TEMPLATE = `Generate ${num_ideas} personalized plates based on user input. The user input is an array of strings where each string representing a text with a curious fact or an idea, use these texts as inspiration or support to generate the plates, but you have to follow the following guidelines:
-
+    
+    * These plates are already in use: ${used_plates.join(", ")}.
     ${
       plateType === "letters"
         ? "* All characters must be letters"
@@ -44,6 +47,7 @@ export async function POST(req: NextRequest) {
     ${symbols === true ? "* Use these emojis ❤, ⭐, 🖐, ➕. Each emoji counts as one character" : ""}.
     ${symbols === true ? "* Use just one emoji per plate" : ""}.
     ${spaces === true ? "* Use spaces inside the word, not on the sides. Each space counts as one character, example: 'DO GG', previous plate has 5 characters." : ""}.
+
     Input:
     
     {input}`;
