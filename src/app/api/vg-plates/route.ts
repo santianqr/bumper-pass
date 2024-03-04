@@ -12,11 +12,11 @@ export const runtime = "edge";
 
 type Body = {
   ideas: string;
-  num_ideas: string;
+  num_ideas: number;
   plateLength: string;
   plateType: string;
-  spaces: string;
-  symbols: string;
+  spaces: boolean;
+  symbols: boolean;
 };
 
 export async function POST(req: NextRequest) {
@@ -37,17 +37,17 @@ export async function POST(req: NextRequest) {
         ? "* All characters must be letters"
         : plateType === "numbers"
           ? "* All characters must be numbers"
-          : "* You could use numbers and letters both and mixed"
+          : "* Use numbers and letters both mixed"
     }.
     ${plateType === "any" || plateType === "numbers" ? "Do not use the number 0" : "Do not use numbers"}
     ${plateLength != "any" ? `* The plate must have ${plateLength} characters` : "* The plate shoud have between 2 and 7 characters"}.
-    ${symbols === "true" ? "* Use these emojis ❤, ⭐, 🖐, ➕. Each emoji counts as one character" : ""}.
-    ${symbols === "true" ? "* Use just one emoji per plate" : ""}.
-    ${spaces === "true" ? "* Use spaces inside the word, not on the sides, ex: 'DO GG'. Space counts as a character" : ""}.
+    ${symbols === true ? "* Use these emojis ❤, ⭐, 🖐, ➕. Each emoji counts as one character" : ""}.
+    ${symbols === true ? "* Use just one emoji per plate" : ""}.
+    ${spaces === true ? "* Use spaces inside the word, not on the sides. Each space counts as one character, example: 'DO GG', previous plate has 5 characters." : ""}.
     Input:
     
     {input}`;
-    console.log(TEMPLATE);
+
     const prompt = PromptTemplate.fromTemplate(TEMPLATE);
 
     const model = new ChatOpenAI({
@@ -67,8 +67,8 @@ export async function POST(req: NextRequest) {
               "Customized plates following the guidelines and being creative.",
             ),
         )
-        .min(parseInt(num_ideas))
-        .max(parseInt(num_ideas))
+        .min(num_ideas)
+        .max(num_ideas)
         .describe(
           `Array of unique and personalized plates following the guidelines.`,
         ),

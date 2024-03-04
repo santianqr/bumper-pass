@@ -89,22 +89,3 @@ export async function GET() {
     }
   }
 }
-
-{
-  /* 
-para placas con simbolos
-hand
-star
-plus 
-heart
-
-tipo K
-
-poner @ en el simbolo
-
-para placas sin simbolos
-kidsPlate ""
-plate_type_R
-plateNameLow environmental
-*/
-}
