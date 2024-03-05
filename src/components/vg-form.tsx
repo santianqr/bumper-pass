@@ -43,13 +43,13 @@ const FormSchema = z.object({
       message: "Type at least 20 characters.",
     })
     .max(180, { message: "Type at most 180 characters." }),
+  allPlates: z.array(z.string()),
 });
 
 type ResponseVg = {
   validPlates: string[];
   allPlates: string[];
 };
-
 
 type VGFormProps = {
   setResult: (result: ResponseVg) => void;
@@ -59,10 +59,9 @@ type VGFormProps = {
     spaces: boolean;
     symbols: boolean;
     description: string;
+    allPlates: string[];
   }) => void;
 };
-
-
 
 export default function VGForm({ setResult, setForm }: VGFormProps) {
   const [loading, setLoading] = useState(false);
@@ -72,6 +71,7 @@ export default function VGForm({ setResult, setForm }: VGFormProps) {
     defaultValues: {
       spaces: false,
       symbols: false,
+      allPlates: [],
     },
   });
 
@@ -105,7 +105,7 @@ export default function VGForm({ setResult, setForm }: VGFormProps) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col items-stretch space-y-1 max-w-screen-sm"
+        className="flex max-w-screen-sm flex-col items-stretch space-y-1"
       >
         <FormField
           control={form.control}

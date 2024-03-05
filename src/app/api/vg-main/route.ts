@@ -12,6 +12,7 @@ type Body = {
   spaces: boolean;
   symbols: boolean;
   description: string;
+  allPlates: string[];
 };
 
 type ResponseCookie = {
@@ -43,6 +44,7 @@ export async function POST(req: NextRequest) {
     const spaces = body.spaces;
     const symbols = body.symbols;
     const description = body.description;
+    let allPlates: string[] = body.allPlates;
 
     // get the cookie
     const response_cookie: Response = await fetch(
@@ -58,8 +60,8 @@ export async function POST(req: NextRequest) {
     const data_cookies = (await response_cookie.json()) as ResponseCookie;
     const cookies = data_cookies.message;
 
+    
     let validPlates: string[] = [];
-    let allPlates: string[] = [];
 
     console.log("validPlates.length: ", validPlates.length);
     while (validPlates.length < 5) {

@@ -18,6 +18,7 @@ export default function VGResults() {
     spaces: boolean;
     symbols: boolean;
     description: string;
+    allPlates: string[];
   } | null>(null);
 
   return (
@@ -30,7 +31,9 @@ export default function VGResults() {
               result={result.validPlates}
               description={form.description}
             />
-            <VGPopup />
+            {form.allPlates}
+            <VGPopup form={form} allPlates={result.allPlates} />
+            
           </>
         ) : null}
       </div>
