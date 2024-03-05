@@ -151,7 +151,7 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({
-      validPlates,
+      validPlates, allPlates
     });
   } catch (error) {
     return NextResponse.json({

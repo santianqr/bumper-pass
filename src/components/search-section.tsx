@@ -1,7 +1,7 @@
 import SearchForm from "./search-form";
 import { Card, CardContent } from "@/components/ui/card";
-import Image from "next/image";
 import Link from "next/link";
+import BPPlate from "./bp-plate";
 
 type Props = {
   id: string;
@@ -53,19 +53,7 @@ export default function SearchSection({ id }: Props) {
           <p className="mb-4 text-xs text-muted-foreground">
             *Only certain specific types of plates allow including symbols
           </p>
-          <div className="relative mx-auto h-[99px] w-[180px]">
-            <Image
-              src="/bp_plate.webp"
-              width={180}
-              height={180}
-              alt="bumperpass_plate"
-            />
-            <p
-              className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[30%] transform font-serif text-2xl font-semibold -tracking-tighter  text-black/80`}
-            >
-              BM3RP4SS
-            </p>
-          </div>
+          <BPPlate bp_plate="BM3RP4SS" />
 
           <p className="text-center text-xs text-muted-foreground">
             *This is not an official preview of your plate
