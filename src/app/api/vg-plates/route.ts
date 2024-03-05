@@ -23,7 +23,7 @@ type Body = {
 export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as Body;
-
+    
     const ideas = body.ideas;
     const num_ideas = body.num_ideas;
     const plateLength = body.plateLength;
@@ -34,7 +34,8 @@ export async function POST(req: NextRequest) {
 
     const TEMPLATE = `Generate ${num_ideas} personalized plates based on user input. The user input is an array of strings where each string representing a text with a curious fact or an idea, use these texts as inspiration or support to generate the plates, but you have to follow the following guidelines:
     
-    * These plates are already in use: ${used_plates.join(", ")}.
+
+    * Just uniques plates.
     ${
       plateType === "letters"
         ? "* All characters must be letters"
@@ -42,16 +43,18 @@ export async function POST(req: NextRequest) {
           ? "* All characters must be numbers"
           : "* Use numbers and letters both mixed"
     }.
-    ${plateType === "any" || plateType === "numbers" ? "Do not use the number 0" : "Do not use numbers"}
+    ${plateType === "any" || plateType === "numbers" ? "* Do not use the number 0" : "* Do not use numbers"}
     ${plateLength != "any" ? `* The plate must have ${plateLength} characters` : "* The plate shoud have between 2 and 7 characters"}.
-    ${symbols === true ? "* Use these emojis ❤, ⭐, 🖐, ➕. Each emoji counts as one character" : ""}.
+    ${symbols === true ? "* Use these emojis ❤, ⭐, 🖐, ➕. Each emoji counts as one character, example 'DO⭐GG' has 5 characters" : ""}.
     ${symbols === true ? "* Use just one emoji per plate" : ""}.
-    ${spaces === true ? "* Use spaces inside the word, not on the sides. Each space counts as one character, example: 'DO GG', previous plate has 5 characters." : ""}.
+    ${spaces === true ? "* Use spaces. Each space counts as one character, example: 'DO GG' has 5 characters" : ""}.
+    ${used_plates.length > 0 ? `* Do not use the following plates: ${used_plates.join(", ")}` : ""}.
+    ${symbols === true && spaces === true ? `* The plate could have including one symbol and spaces, example: 'A1 ❤ B'.` : ""}.
 
     Input:
     
     {input}`;
-
+    
     const prompt = PromptTemplate.fromTemplate(TEMPLATE);
 
     const model = new ChatOpenAI({
@@ -68,13 +71,13 @@ export async function POST(req: NextRequest) {
             .min(2, "Min 2 characters.")
             .max(7, "Max 7 characters.")
             .describe(
-              "Customized plates following the guidelines and being creative.",
+              "Customized plates following strictly the guidelines and being creative.",
             ),
         )
         .min(num_ideas)
         .max(num_ideas)
         .describe(
-          `Array of unique and personalized plates following the guidelines.`,
+          `Array of unique and personalized plates following strictly the guidelines.`,
         ),
     });
 

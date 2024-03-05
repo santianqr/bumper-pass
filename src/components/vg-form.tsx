@@ -4,8 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 //import { cn } from "@/lib/utils";
-//import { Loader } from "lucide-react";
-//import { api } from "@/trpc/server";
+import { Loader } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +26,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/components/ui/use-toast";
 import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
 
 const FormSchema = z.object({
   plateLength: z.string({
@@ -45,7 +45,17 @@ const FormSchema = z.object({
     .max(180, { message: "Type at most 180 characters." }),
 });
 
-export default function VGForm() {
+type ResponseVg = {
+  validPlates: string[];
+};
+
+type VGFormProps = {
+  setResult: (result: string[]) => void;
+};
+
+export default function VGForm({ setResult }: VGFormProps) {
+  const [loading, setLoading] = useState(false);
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -55,7 +65,19 @@ export default function VGForm() {
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    //const response = await api.search.searchPlate.query(data);
+    setLoading(true);
+    console.log(data);
+    const response: Response = await fetch("/api/vg-main", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    const responseData = (await response.json()) as ResponseVg;
+    console.log(responseData.validPlates);
+    setResult(responseData.validPlates);
+    setLoading(false);
 
     toast({
       title: "You submitted the following values:",
@@ -69,11 +91,10 @@ export default function VGForm() {
 
   return (
     <section className="">
-      {" "}
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="max-w-screen-sm space-y-2 flex flex-col items-stretch mx-auto"
+          className="mx-auto flex max-w-screen-sm flex-col items-stretch space-y-2"
         >
           <FormField
             control={form.control}
@@ -187,9 +208,9 @@ export default function VGForm() {
           />
           <Button
             type="submit"
-            className="rounded-3xl bg-[#E62534] hover:bg-[#E62534]/90 self-end"
+            className="self-end rounded-3xl bg-[#E62534] hover:bg-[#E62534]/90"
           >
-            Generate
+            {loading ? <Loader className="animate-spin" /> : "Generate"}
           </Button>
         </form>
       </Form>

@@ -5,11 +5,13 @@ const emojis = ["❤", "⭐", "🖐", "➕"];
 
 function validatePlate(
   plate: string,
+  allPlates: string[],
   plateLength: string,
   plateType: string,
   spaces: boolean,
   symbols: boolean,
 ): boolean {
+  const existsCondition = !allPlates.includes(plate);
   const upperCasePlate = plate.toUpperCase();
   const plateWithoutEmojis = upperCasePlate.replace(
     new RegExp(emojis.join("|"), "g"),
@@ -31,12 +33,17 @@ function validatePlate(
     ? emojis.filter((emoji) => upperCasePlate.includes(emoji)).length <= 1
     : !emojis.some((emoji) => upperCasePlate.includes(emoji));
   return (
-    lengthCondition && typeCondition && spacesCondition && symbolsCondition
+    lengthCondition &&
+    typeCondition &&
+    spacesCondition &&
+    symbolsCondition &&
+    existsCondition
   );
 }
 
 type Body = {
   plates: string[];
+  allPlates: string[];
   plateLength: string;
   plateType: string;
   spaces: boolean;
@@ -48,13 +55,14 @@ export async function POST(req: NextRequest) {
     const body = (await req.json()) as Body;
 
     const plates: string[] = body.plates;
+    const allPlates: string[] = body.allPlates;
     const plateLength = body.plateLength;
     const plateType = body.plateType;
     const spaces = body.spaces;
     const symbols = body.symbols;
 
     const validPlates = plates.filter((plate) =>
-      validatePlate(plate, plateLength, plateType, spaces, symbols),
+      validatePlate(plate, allPlates, plateLength, plateType, spaces, symbols),
     );
 
     return NextResponse.json({ validPlates: validPlates });

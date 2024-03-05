@@ -61,7 +61,9 @@ export async function POST(req: NextRequest) {
     let validPlates: string[] = [];
     let allPlates: string[] = [];
 
+    console.log("validPlates.length: ", validPlates.length);
     while (validPlates.length < 5) {
+      const num_ideas = 5 - validPlates.length;
       // get the ideas
       const response_ideas: Response = await fetch(
         "http://localhost:3000/api/vg-ideas",
@@ -73,13 +75,13 @@ export async function POST(req: NextRequest) {
           },
           body: JSON.stringify({
             description: description,
-            num_ideas: validPlates.length,
+            num_ideas: num_ideas,
           }),
         },
       );
       const data_ideas = (await response_ideas.json()) as ResponseIdeas;
       const ideas = data_ideas.ideas;
-      console.log(ideas);
+      console.log("ideas: ", ideas);
 
       // get the plates
       const response_plates: Response = await fetch(
@@ -91,7 +93,7 @@ export async function POST(req: NextRequest) {
           },
           body: JSON.stringify({
             ideas: ideas,
-            num_ideas: validPlates.length,
+            num_ideas: num_ideas,
             plateLength: plateLength,
             plateType: plateType,
             spaces: spaces,
@@ -102,8 +104,7 @@ export async function POST(req: NextRequest) {
       );
       const data_plates = (await response_plates.json()) as ResponsePlates;
       const plates = data_plates.plates;
-      console.log(plates);
-      allPlates = allPlates.concat(plates);
+      console.log("plates:", plates);
 
       // validate each plate by algorithm
       const response_valid: Response = await fetch(
@@ -119,13 +120,16 @@ export async function POST(req: NextRequest) {
             spaces: spaces,
             symbols: symbols,
             plates: plates,
+            allPlates: allPlates,
           }),
         },
       );
       const data_valid = (await response_valid.json()) as ResponseValid;
       const valid_plates = data_valid.validPlates;
-      console.log(valid_plates);
+      console.log("valid plates: ", valid_plates);
 
+      allPlates = allPlates.concat(plates);
+      console.log("allPlates:", allPlates);
       // second validation with search vg
       const response_search: Response = await fetch(
         "http://localhost:3000/api/vg-search",
@@ -142,7 +146,7 @@ export async function POST(req: NextRequest) {
       );
       const data_search = (await response_search.json()) as ResponseSearch;
       const search_plates = data_search.validPlates;
-      console.log(search_plates);
+      console.log("search plates: ", search_plates);
       validPlates = validPlates.concat(search_plates);
     }
 

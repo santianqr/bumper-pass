@@ -1,4 +1,4 @@
-import VGForm from "@/components/vg-form";
+import VGResults from "@/components/vg-results";
 
 export default function VGPage() {
   return (
@@ -29,7 +29,7 @@ export default function VGPage() {
           </ul>
         </div>
       </section>
-      <VGForm />
+      <VGResults />
     </main>
   );
 }
