@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { set, z } from "zod";
+import { z } from "zod";
 import { Loader } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -324,14 +324,16 @@ export default function SignUp() {
               name="terms"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex space-x-1 items-center">
+                  <div className="flex items-center space-x-1">
                     <FormControl>
                       <Checkbox
                         checked={field.value}
                         onCheckedChange={field.onChange}
                       />
                     </FormControl>
-                    <FormLabel className="text-sm font-normal underline decoration-1 underline-offset-4 decoration-foreground">Accept terms and conditions</FormLabel>
+                    <FormLabel className="text-sm font-normal underline decoration-foreground decoration-1 underline-offset-4">
+                      Accept terms and conditions
+                    </FormLabel>
                     <FormDescription></FormDescription>
                   </div>
 
@@ -344,14 +346,16 @@ export default function SignUp() {
               name="suscribe"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex space-x-1 items-center">
+                  <div className="flex items-center space-x-1">
                     <FormControl>
                       <Checkbox
                         checked={field.value}
                         onCheckedChange={field.onChange}
                       />
                     </FormControl>
-                    <FormLabel className="text-sm font-normal">Suscribe newsletter</FormLabel>
+                    <FormLabel className="text-sm font-normal">
+                      Suscribe newsletter
+                    </FormLabel>
                     <FormDescription></FormDescription>
                   </div>
 
