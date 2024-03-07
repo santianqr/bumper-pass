@@ -4,7 +4,7 @@ import { Instagram, Mail } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="container mt-20 space-y-8 border-t-2 border-border/40 py-4">
+    <footer className="container space-y-8 border-t-2 border-border/40 py-4">
       <h2 className="scroll-m-20 text-center text-3xl font-semibold tracking-tight first:mt-0">
         Contact
       </h2>
