@@ -99,7 +99,13 @@ export default function SignUp() {
 
   return (
     <Form {...form}>
-      <div className="space-y-6">
+      <div
+        className="space-y-6 bg-right-top bg-no-repeat"
+        style={{
+          backgroundImage: "url('/bp_logo_gray.webp')",
+          backgroundSize: "150px 150px",
+        }}
+      >
         <div>
           <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
             Create and account and
