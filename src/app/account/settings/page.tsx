@@ -1,5 +1,6 @@
 import { CircleUser } from "lucide-react";
 import SettingsForm from "@/components/settings-form";
+import NotificationsForm from "@/components/notifications-form";
 
 export default function Settings() {
   return (
@@ -9,9 +10,10 @@ export default function Settings() {
       </aside>
       <section className="space-y-4 p-8">
         <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-          Account Information
+          Settings & Preferences
         </h3>
         <SettingsForm />
+        <NotificationsForm />
       </section>
     </main>
   );
