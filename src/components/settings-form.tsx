@@ -15,16 +15,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
 
 const FormSchema = z
@@ -82,7 +74,7 @@ export default function SettingsForm() {
   }
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-1/3 space-y-2">
         <FormField
           control={form.control}
           name="currentPassword"

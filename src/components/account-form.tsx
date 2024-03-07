@@ -83,7 +83,7 @@ export default function AccountForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-2">
         <FormField
           control={form.control}
           name="firstName"
