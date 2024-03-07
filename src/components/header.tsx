@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Navbar from "@/components/navbar";
 import Link from "next/link";
-import UserAvatar from "./user-avatar";
+import UserAvatar from "./header-avatar";
 import {
   Popover,
   PopoverContent,

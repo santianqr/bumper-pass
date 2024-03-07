@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 
-export default function CardServices() {
+export default function ServicesCard() {
   return (
     <div className="grid grid-cols-2 gap-4 justify-items-center">
       <Card className="grid max-w-xs grid-cols-1 justify-items-center border-none shadow-none">

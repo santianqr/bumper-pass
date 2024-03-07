@@ -6,7 +6,7 @@ export default function DashboardOptions() {
     <div className="grid grid-cols-3 justify-items-stretch ">
       <Link
         className="flex flex-col items-center justify-self-end"
-        href="/account/dashboard/my-vg"
+        href="/account/dashboard/my-search"
       >
         <div className="flex h-[75px] w-[75px] items-center justify-center rounded-full bg-primary bg-gradient-to-r from-[#E62534] to-[#F59F0F] p-1 text-[#FFFFFF]">
           <SearchCheck size={60} />

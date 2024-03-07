@@ -1,4 +1,4 @@
-import CardServices from "./cards-services";
+import ServicesCard from "./services-card";
 
 type Props = {
   id: string;
@@ -12,7 +12,7 @@ export default function ServicesSection({ id }: Props) {
           Services
         </h2>
       </div>
-      <CardServices />
+      <ServicesCard />
     </section>
   );
 }
