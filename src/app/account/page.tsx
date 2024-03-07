@@ -1,5 +1,11 @@
 export default function Account() {
   return (
-    <div>page</div>
-  )
+    <main>
+      <aside>user</aside>
+      <section>
+        <p>Account Information</p>
+        
+      </section>
+    </main>
+  );
 }
