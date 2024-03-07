@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Navbar from "@/components/navbar";
 import Link from "next/link";
-import UserAvatar from "./header-avatar";
+import HeaderAvatar from "./header-avatar";
 import {
   Popover,
   PopoverContent,
@@ -48,7 +48,7 @@ export default function Header() {
           <Navbar />
           <Popover>
             <PopoverTrigger>
-              <UserAvatar />
+              <HeaderAvatar />
             </PopoverTrigger>
             <PopoverContent className="w-48 items-center space-y-1 text-foreground/60">
               {options.map((option, index) => (

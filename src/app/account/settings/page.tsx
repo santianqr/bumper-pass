@@ -1,6 +1,6 @@
 import { CircleUser } from "lucide-react";
 import SettingsForm from "@/components/settings-form";
-import NotificationsForm from "@/components/notifications-form";
+import NotificationsForm from "@/components/settings-notifications-form";
 
 export default function Settings() {
   return (

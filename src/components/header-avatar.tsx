@@ -2,7 +2,7 @@ import { CircleUser, ChevronDown } from "lucide-react";
 import { getServerAuthSession } from "@/server/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-export default async function UserAvatar() {
+export default async function HeaderAvatar() {
   const session = await getServerAuthSession();
   return (
     <div>
