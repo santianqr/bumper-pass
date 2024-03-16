@@ -8,16 +8,16 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import BPPlate from "./bp-plate";
+import { Plate } from "./plate";
 
 type VGCardProps = {
   result: string[];
   description: string;
 };
 
-export default function VGCard({ result, description }: VGCardProps) {
+export function VGCard({ result, description }: VGCardProps) {
   return (
-    <Card className="flex max-w-screen-sm flex-col items-stretch">
+    <Card className="flex flex-col items-stretch">
       <CardHeader>
         <CardTitle>Your type</CardTitle>
         <CardDescription>{description}</CardDescription>
@@ -26,13 +26,13 @@ export default function VGCard({ result, description }: VGCardProps) {
         <CardContent className="flex flex-wrap justify-center">
           {result.map((bp_plate, index) => (
             <div key={index} className="w-1/2 p-4">
-              <BPPlate bp_plate={bp_plate} />
+              <Plate bpPlate={bp_plate} />
             </div>
           ))}
         </CardContent>
       </CardContent>
       <CardFooter className="self-end">
-        <Link href="/account/dashbpard">
+        <Link href="/account/dashboard">
           <Button
             type="submit"
             className="rounded-3xl bg-[#E62534] hover:bg-[#E62534]/90"

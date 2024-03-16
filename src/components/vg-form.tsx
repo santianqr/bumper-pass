@@ -61,11 +61,11 @@ type VGFormProps = {
     description: string;
     allPlates: string[];
   }) => void;
+  plates: string[];
 };
 
-export default function VGForm({ setResult, setForm }: VGFormProps) {
+export function VGForm({ setResult, setForm, plates }: VGFormProps) {
   const [loading, setLoading] = useState(false);
-
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -77,13 +77,13 @@ export default function VGForm({ setResult, setForm }: VGFormProps) {
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setLoading(true);
-    console.log(data);
+    const allPlates = data.allPlates.concat(plates);
     const response: Response = await fetch("/api/vg-main", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify({ ...data, allPlates }),
     });
     const responseData = (await response.json()) as ResponseVg;
     console.log(responseData.validPlates);
@@ -105,7 +105,7 @@ export default function VGForm({ setResult, setForm }: VGFormProps) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex max-w-screen-sm flex-col items-stretch space-y-1"
+        className="flex flex-col items-stretch space-y-1"
       >
         <FormField
           control={form.control}
@@ -214,6 +214,7 @@ export default function VGForm({ setResult, setForm }: VGFormProps) {
         <Button
           type="submit"
           className="self-end rounded-3xl bg-[#E62534] hover:bg-[#E62534]/90"
+          disabled={loading}
         >
           {loading ? <Loader className="animate-spin" /> : "Generate"}
         </Button>

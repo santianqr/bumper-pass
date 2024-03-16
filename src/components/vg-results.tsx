@@ -1,8 +1,8 @@
 "use client";
 
-import VGForm from "@/components/vg-form";
-import VGCard from "./vg-card";
-import VGPopup from "./vg-popup";
+import { VGForm } from "@/components/vg-form";
+import { VGCard } from "./vg-card";
+import { VGPopup } from "./vg-popup";
 import { useState } from "react";
 
 type ResponseVg = {
@@ -10,7 +10,11 @@ type ResponseVg = {
   allPlates: string[];
 };
 
-export default function VGResults() {
+type VGResultsProps = {
+  plates: string[];
+};
+
+export function VGResults({ plates }: VGResultsProps) {
   const [result, setResult] = useState<ResponseVg | null>(null);
   const [form, setForm] = useState<{
     plateLength: string;
@@ -24,7 +28,7 @@ export default function VGResults() {
   return (
     <section className="flex justify-center ">
       <div className="w-full max-w-screen-sm space-y-4">
-        <VGForm setResult={setResult} setForm={setForm} />
+        <VGForm plates={plates} setResult={setResult} setForm={setForm} />
         {result && form ? (
           <>
             <VGCard
@@ -33,7 +37,6 @@ export default function VGResults() {
             />
             {form.allPlates}
             <VGPopup form={form} allPlates={result.allPlates} />
-            
           </>
         ) : null}
       </div>

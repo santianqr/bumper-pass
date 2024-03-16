@@ -10,9 +10,9 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 
-export default function ServicesCard() {
+export function ServicesCard() {
   return (
-    <div className="grid grid-cols-2 gap-4 justify-items-center">
+    <div className="grid grid-cols-2 justify-items-center gap-4">
       <Card className="grid max-w-xs grid-cols-1 justify-items-center border-none shadow-none">
         <CardHeader className="flex h-[75px] w-[75px] items-center justify-center rounded-full bg-primary bg-gradient-to-r from-[#E62534] to-[#F59F0F] p-1 text-[#FFFFFF]">
           <SearchCheck size={60} />
@@ -35,7 +35,6 @@ export default function ServicesCard() {
         <CardFooter>
           <Link href="/#search-now">
             <Button
-              type="submit"
               className="rounded-3xl bg-[#E62534] hover:bg-[#E62534]/90"
             >
               Make a search
@@ -60,9 +59,8 @@ export default function ServicesCard() {
         </CardContent>
         <CardDescription></CardDescription>
         <CardFooter>
-          <Link href="/vg">
+          <Link href="/services/vg">
             <Button
-              type="submit"
               className="rounded-3xl bg-[#F59F0F] hover:bg-[#F59F0F]/90"
             >
               Learn more

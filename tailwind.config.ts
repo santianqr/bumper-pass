@@ -18,6 +18,7 @@ const config = {
         "2xl": "1400px",
       },
     },
+
     extend: {
       fontFamily: {
         maven: ["var(--font-maven)", ...fontFamily.sans],

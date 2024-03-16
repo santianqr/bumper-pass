@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader } from "lucide-react";
-import VGCard from "./vg-card";
+import { VGCard } from "./vg-card";
 
 type VGPopupProps = {
   form: {
@@ -23,7 +23,7 @@ type ResponseVg = {
   allPlates: string[];
 };
 
-export default function VGPopup({ form, allPlates }: VGPopupProps) {
+export function VGPopup({ form, allPlates }: VGPopupProps) {
   const [showTextarea, setShowTextarea] = useState(false);
   const [textareaValue, setTextareaValue] = useState("");
   const [loading, setLoading] = useState(false);
@@ -87,6 +87,7 @@ export default function VGPopup({ form, allPlates }: VGPopupProps) {
             type="submit"
             onClick={handleYesClick}
             className="rounded-3xl bg-[#E62534] hover:bg-[#E62534]/90"
+            disabled={loading}
           >
             {loading ? <Loader className="animate-spin" /> : "Yes"}
           </Button>
@@ -94,6 +95,7 @@ export default function VGPopup({ form, allPlates }: VGPopupProps) {
             type="submit"
             onClick={handleNoClick}
             className="rounded-3xl bg-[#F59F0F] hover:bg-[#F59F0F]/90"
+            disabled={loading}
           >
             {loading ? <Loader className="animate-spin" /> : "No"}
           </Button>
@@ -109,6 +111,7 @@ export default function VGPopup({ form, allPlates }: VGPopupProps) {
               type="submit"
               onClick={handleSendClick}
               className="rounded-3xl bg-[#F59F0F] hover:bg-[#F59F0F]/90"
+              disabled={loading}
             >
               {loading ? <Loader className="animate-spin" /> : "Send"}
             </Button>
@@ -116,7 +119,10 @@ export default function VGPopup({ form, allPlates }: VGPopupProps) {
         )}
       </div>
       {responseYes && form ? (
-        <VGCard result={responseYes.validPlates} description={form.description} />
+        <VGCard
+          result={responseYes.validPlates}
+          description={form.description}
+        />
       ) : null}
       {responseSend && form ? (
         <VGCard result={responseSend.validPlates} description={textareaValue} />

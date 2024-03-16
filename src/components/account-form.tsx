@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Loader } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -24,61 +23,67 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { useState } from "react";
+import { api } from "@/trpc/react";
 
 const FormSchema = z.object({
-  email: z
-    .string({ required_error: "Please type a valid email." })
-    .email()
-    .optional(),
-  firstName: z
-    .string()
-    .min(2, { message: "Type at least 2 characters." })
-    .optional(),
-  state: z
-    .string({ required_error: "Please select a valid option." })
-    .optional(),
+  email: z.string({ required_error: "Please type a valid email." }).email(),
+  name: z.string().min(2, { message: "Type at least 2 characters." }),
+  state: z.string({ required_error: "Please select a valid option." }),
   phone: z.string().optional(),
-  city: z
-    .string()
-    .min(2, { message: "Type at least 2 characters." })
-    .optional(),
+  city: z.string().min(2, { message: "Type at least 2 characters." }),
   zipCode: z
     .string()
     .refine((value) => /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(value), {
       message: "Must be a valid zip code on USA.",
-    })
-    .optional(),
+    }),
   currentPlate: z
     .string()
     .min(2, { message: "Type at least 2 characters." })
-    .max(7, { message: "Type at most 7 characters." })
-    .optional(),
-  numberNameStreet: z
-    .string()
-    .min(2, { message: "Type at least 2 characters." })
-    .optional(),
+    .max(7, { message: "Type at most 7 characters." }),
+  street: z.string().min(2, { message: "Type at least 2 characters." }),
 });
 
-export default function AccountForm() {
-  const [loading, setLoading] = useState(false);
+type Props = {
+  name: string | null;
+  email: string | null;
+  phone: string | null;
+  state: string | null;
+  city: string | null;
+  street: string | null;
+  zipCode: string | null;
+  currentPlate: string | null;
+};
 
+export function AccountForm({ accountData }: { accountData: Props }) {
+  console.log(accountData);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {},
+    defaultValues: {
+      name: accountData.name ?? "",
+      email: accountData.email ?? "",
+      city: accountData.city ?? "",
+      street: accountData.street ?? "",
+      zipCode: accountData.zipCode ?? "",
+      currentPlate: accountData.currentPlate ?? "",
+      state: accountData.state ?? "",
+      phone: accountData.phone ?? "",
+    },
   });
-
+  const updateUser = api.func.updateAccount.useMutation({
+    onSuccess: (data) => {
+      toast({
+        title: "You submitted the following values:",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+          </pre>
+        ),
+      });
+    },
+  });
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    setLoading(true);
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
-    setLoading(false);
+    const res = updateUser.mutate(data);
+    console.log(res);
   }
 
   return (
@@ -86,12 +91,12 @@ export default function AccountForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-2">
         <FormField
           control={form.control}
-          name="firstName"
+          name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>First Name*</FormLabel>
+              <FormLabel>First Name</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} placeholder={accountData.name ?? ""} />
               </FormControl>
               <FormDescription></FormDescription>
               <FormMessage />
@@ -105,7 +110,12 @@ export default function AccountForm() {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input {...field} type="email" disabled />
+                <Input
+                  {...field}
+                  type="email"
+                  disabled
+                  placeholder={accountData.email ?? ""}
+                />
               </FormControl>
               <FormDescription></FormDescription>
               <FormMessage />
@@ -119,7 +129,7 @@ export default function AccountForm() {
             <FormItem>
               <FormLabel>Phone Number</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} placeholder={accountData.phone ?? ""} />
               </FormControl>
               <FormDescription></FormDescription>
               <FormMessage />
@@ -131,7 +141,7 @@ export default function AccountForm() {
           name="state"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>State*</FormLabel>
+              <FormLabel>State</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
@@ -152,9 +162,9 @@ export default function AccountForm() {
           name="city"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>City*</FormLabel>
+              <FormLabel>City</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} placeholder={accountData.city ?? ""} />
               </FormControl>
               <FormDescription></FormDescription>
               <FormMessage />
@@ -163,12 +173,12 @@ export default function AccountForm() {
         />
         <FormField
           control={form.control}
-          name="numberNameStreet"
+          name="street"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Number & Name Street*</FormLabel>
+              <FormLabel>Number & Name Street</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} placeholder={accountData.street ?? ""} />
               </FormControl>
               <FormDescription></FormDescription>
               <FormMessage />
@@ -181,9 +191,9 @@ export default function AccountForm() {
           name="zipCode"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Zip Code*</FormLabel>
+              <FormLabel>Zip Code</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} placeholder={accountData.zipCode ?? ""} />
               </FormControl>
               <FormDescription></FormDescription>
               <FormMessage />
@@ -195,9 +205,12 @@ export default function AccountForm() {
           name="currentPlate"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Current Plate*</FormLabel>
+              <FormLabel>Current Plate</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input
+                  {...field}
+                  placeholder={accountData.currentPlate ?? ""}
+                />
               </FormControl>
               <FormDescription></FormDescription>
               <FormMessage />
@@ -207,8 +220,9 @@ export default function AccountForm() {
         <Button
           type="submit"
           className="self-end rounded-3xl bg-[#E62534] hover:bg-[#E62534]/90"
+          disabled={updateUser.isLoading}
         >
-          {loading ? <Loader className="animate-spin" /> : "Update"}
+          {updateUser.isLoading ? "Loading..." : "Save"}
         </Button>
       </form>
     </Form>

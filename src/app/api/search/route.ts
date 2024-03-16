@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import * as puppeteer from "puppeteer";
+import { api } from "@/trpc/server";
 
 const symbolMap: Record<string, string> = {
   "❤": "heart",
@@ -20,6 +21,7 @@ const replaceSymbols = (text: string) => {
 interface Body {
   vehicleType: string;
   personalizedPlate: string;
+  state: string;
 }
 
 let page: puppeteer.Page | undefined;
@@ -36,10 +38,10 @@ export async function POST(req: NextRequest) {
     }
     if (!browser) {
       browser = await puppeteer.launch({
-        headless: false,
-        slowMo: 5,
+        headless: true,
+        //slowMo: 5,
         //headless: true,
-        //executablePath: "/usr/bin/chromium",
+        executablePath: "/usr/bin/chromium",
         args: [
           "--no-sandbox",
           "--disable-setuid-sandbox",
@@ -112,14 +114,32 @@ export async function POST(req: NextRequest) {
     const spanElement = await page.$(".progress__tooltip");
 
     if (spanElement === null) {
-      return NextResponse.json({ message: "NO", status: 200 });
+      const newPlate = await api.func.savePlate.mutate({
+        plate: body.personalizedPlate,
+        available: false,
+        vehicleType: body.vehicleType,
+        state: body.state,
+      });
+      return NextResponse.json({ message: "NO", status: 200, newPlate });
     } else {
       const spanText = await spanElement.getProperty("textContent");
       const text = await spanText.jsonValue();
       if (text === "Progress: 30%") {
-        return NextResponse.json({ message: "OK", status: 200 });
+        const newPlate = await api.func.savePlate.mutate({
+          plate: body.personalizedPlate,
+          available: true,
+          vehicleType: body.vehicleType,
+          state: body.state,
+        });
+        return NextResponse.json({ message: "OK", status: 200, newPlate });
       } else {
-        return NextResponse.json({ message: "NO", status: 200 });
+        const newPlate = await api.func.savePlate.mutate({
+          plate: body.personalizedPlate,
+          available: false,
+          vehicleType: body.vehicleType,
+          state: body.state,
+        });
+        return NextResponse.json({ message: "NO", status: 200, newPlate });
       }
     }
   } catch (e: unknown) {

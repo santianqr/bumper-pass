@@ -8,10 +8,10 @@ export async function GET() {
   try {
     if (!browser) {
       browser = await puppeteer.launch({
-        headless: false,
-        slowMo: 10,
+        headless: true,
+        //slowMo: 10,
         //headless: true,
-        //executablePath: "/usr/bin/chromium",
+        executablePath: "/usr/bin/chromium",
         args: [
           "--no-sandbox",
           "--disable-setuid-sandbox",
@@ -63,21 +63,12 @@ export async function GET() {
       console.log("The button does not exist");
 
     await page.waitForNavigation({ waitUntil: "networkidle0" });
-    const spanElement = await page.$(".progress__tooltip");
-
-    if (spanElement === null) {
-      return NextResponse.json({
-        message: "Error, spanELement is null.",
-        status: 200,
-      });
-    } else {
-      const cookies = await page.cookies();
-      const cookiesString = cookies
-        .map((cookie) => `${cookie.name}=${cookie.value}`)
-        .join("; ");
-      console.log(cookiesString);
-      return NextResponse.json({ message: cookiesString });
-    }
+    await page.$(".progress__tooltip");
+    const cookies = await page.cookies();
+    const cookiesString = cookies
+      .map((cookie) => `${cookie.name}=${cookie.value}`)
+      .join("; ");
+    return NextResponse.json({ message: cookiesString });
   } catch (e: unknown) {
     if (e instanceof Error) {
       return NextResponse.json({ error: e.message }, { status: 500 });

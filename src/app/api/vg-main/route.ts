@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getRandomUserAgent } from "@/lib/userAgents";
+import { api } from "@/trpc/server";
 
 const userAgent =
   getRandomUserAgent() ??
@@ -45,7 +46,12 @@ export async function POST(req: NextRequest) {
     const symbols = body.symbols;
     const description = body.description;
     let allPlates: string[] = body.allPlates;
-
+    console.log("plateLength: in vg main", plateLength);
+    console.log("plateType: in vg main", plateType);
+    console.log("spaces: in vg main", spaces);
+    console.log("symbols: in vg main", symbols);
+    console.log("description: in vg main", description);
+    console.log("allPlates: in vg main", allPlates);
     // get the cookie
     const response_cookie: Response = await fetch(
       "http://localhost:3000/api/vg-cookie",
@@ -59,8 +65,8 @@ export async function POST(req: NextRequest) {
     );
     const data_cookies = (await response_cookie.json()) as ResponseCookie;
     const cookies = data_cookies.message;
+    console.log("cookies: ", cookies);
 
-    
     let validPlates: string[] = [];
 
     console.log("validPlates.length: ", validPlates.length);
@@ -151,9 +157,11 @@ export async function POST(req: NextRequest) {
       console.log("search plates: ", search_plates);
       validPlates = validPlates.concat(search_plates);
     }
+    await api.func.saveValidPlates.mutate({ plates: validPlates, description });
 
     return NextResponse.json({
-      validPlates, allPlates
+      validPlates,
+      allPlates,
     });
   } catch (error) {
     return NextResponse.json({

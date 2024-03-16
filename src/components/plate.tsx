@@ -1,10 +1,10 @@
 import Image from "next/image";
 
-type BPPlateProps = {
-  bp_plate: string;
+type Props = {
+  bpPlate: string;
 };
 
-export default function BPPlate({ bp_plate }: BPPlateProps) {
+export function Plate({ bpPlate }: Props) {
   return (
     <div className="relative mx-auto h-[99px] w-[180px]">
       <Image
@@ -16,7 +16,7 @@ export default function BPPlate({ bp_plate }: BPPlateProps) {
       <p
         className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[30%] transform font-serif text-2xl font-semibold -tracking-tighter  text-black/80`}
       >
-        {bp_plate}
+        {bpPlate}
       </p>
     </div>
   );
