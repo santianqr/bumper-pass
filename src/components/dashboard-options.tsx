@@ -1,7 +1,7 @@
 import { SearchCheck, Lightbulb } from "lucide-react";
 import Link from "next/link";
 
-export default function DashboardOptions() {
+export function DashboardOptions() {
   return (
     <div className="grid grid-cols-3 justify-items-stretch ">
       <Link

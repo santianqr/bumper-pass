@@ -15,7 +15,7 @@ function validatePlate(
   const upperCasePlate = plate.toUpperCase();
   const plateWithoutEmojis = upperCasePlate.replace(
     new RegExp(emojis.join("|"), "g"),
-    "E",
+    "@",
   );
   const trimmedPlate = plateWithoutEmojis.trim();
   const lengthCondition =
@@ -24,8 +24,8 @@ function validatePlate(
       : trimmedPlate.length === Number(plateLength);
   const typeCondition =
     plateType === "any" ||
-    (plateType === "letters" && /^[A-Z\s]*$/.test(trimmedPlate)) ||
-    (plateType === "numbers" && /^[1-9\s]*$/.test(trimmedPlate));
+    (plateType === "letters" && /^[A-Z@\s]*$/.test(trimmedPlate)) ||
+    (plateType === "numbers" && /^[1-9@\s]*$/.test(trimmedPlate));
   const spacesCondition = spaces
     ? !/^[\s]|[\s]$/.test(trimmedPlate)
     : !/\s/.test(trimmedPlate);

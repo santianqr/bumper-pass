@@ -1,8 +1,15 @@
 import { CircleUser } from "lucide-react";
-import SettingsForm from "@/components/settings-form";
-import NotificationsForm from "@/components/settings-notifications-form";
+import { SettingsForm } from "@/components/settings-form";
+import { NotificactionsForm } from "@/components/settings-notifications-form";
+import { api } from "@/trpc/server";
 
-export default function Settings() {
+import { unstable_noStore as noStore } from "next/cache";
+import DeleteForm from "@/components/settings-delete-form";
+
+export default async function Settings() {
+  noStore();
+  const suscribeData = await api.func.getSuscribe.query();
+  const suscribe = suscribeData?.suscribe ?? false;
   return (
     <main className="flex">
       <aside className="bg-foreground/15 p-8 text-primary">
@@ -13,7 +20,8 @@ export default function Settings() {
           Settings & Preferences
         </h3>
         <SettingsForm />
-        <NotificationsForm />
+        <NotificactionsForm suscribe={suscribe} />
+        <DeleteForm />
       </section>
     </main>
   );

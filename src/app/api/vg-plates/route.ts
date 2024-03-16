@@ -7,8 +7,7 @@ import { zodToJsonSchema } from "zod-to-json-schema";
 import { ChatOpenAI } from "@langchain/openai";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { JsonOutputFunctionsParser } from "langchain/output_parsers";
-
-export const runtime = "edge";
+//import { env } from "@/env";
 
 type Body = {
   ideas: string;
@@ -23,7 +22,7 @@ type Body = {
 export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as Body;
-    
+
     const ideas = body.ideas;
     const num_ideas = body.num_ideas;
     const plateLength = body.plateLength;
@@ -32,33 +31,28 @@ export async function POST(req: NextRequest) {
     const symbols = body.symbols;
     const used_plates = body.used_plates;
 
-    const TEMPLATE = `Generate ${num_ideas} personalized plates based on user input. The user input is an array of strings where each string representing a text with a curious fact or an idea, use these texts as inspiration or support to generate the plates, but you have to follow the following guidelines:
+    const TEMPLATE = `The input is ${num_ideas} ideas or short texts. Based on those ideas, generate personalized license plates for the USA following the rules. Be creative and use all related data about the topics. If you need more ideas, you can use the same input and generate more ideas, if you need numbers please search all related to numbers about the ideas.
     
-
-    * Just uniques plates.
     ${
       plateType === "letters"
-        ? "* All characters must be letters"
+        ? "- All characters must be letters"
         : plateType === "numbers"
-          ? "* All characters must be numbers"
-          : "* Use numbers and letters both mixed"
+          ? "- Use just numbers between 1 to 9"
+          : "- Use numbers and letters both mixed"
     }.
-    ${plateType === "any" || plateType === "numbers" ? "* Do not use the number 0" : "* Do not use numbers"}
-    ${plateLength != "any" ? `* The plate must have ${plateLength} characters` : "* The plate shoud have between 2 and 7 characters"}.
-    ${symbols === true ? "* Use these emojis ❤, ⭐, 🖐, ➕. Each emoji counts as one character, example 'DO⭐GG' has 5 characters" : ""}.
-    ${symbols === true ? "* Use just one emoji per plate" : ""}.
-    ${spaces === true ? "* Use spaces. Each space counts as one character, example: 'DO GG' has 5 characters" : ""}.
-    ${used_plates.length > 0 ? `* Do not use the following plates: ${used_plates.join(", ")}` : ""}.
-    ${symbols === true && spaces === true ? `* The plate could have including one symbol and spaces, example: 'A1 ❤ B'.` : ""}.
-
-    Input:
-    
-    {input}`;
-    
+    ${plateType === "any" || plateType === "numbers" ? "- Do not use the number 0 and do not use letter (A-Z)" : "- Do not use numbers"}.
+    ${symbols === true ? "- Use these emojis ❤, ⭐, 🖐, ➕. Each emoji counts as one character, example '12⭐34' has 5 characters." : ""}
+    ${plateLength != "any" ? `- The plate must have ${plateLength} characters` : "- The plate shoud have between 2 and 7 characters"}.
+    ${symbols === true ? "- Use just one emoji per plate" : "- Do not use emojis"}.
+    ${spaces === true ? "- Use spaces. Each space counts as one character, example: 'DO GG' has 5 characters." : ""}
+    ${used_plates.length > 0 ? `- Do not use the following plates, because you already reccomend: ${used_plates.join(", ")}.` : ""}
+    ${symbols === true && spaces === true ? `- The plate could have including one symbol and spaces, example: 'A1 ❤ B'.` : ""}
+    `;
+    console.log(TEMPLATE);
     const prompt = PromptTemplate.fromTemplate(TEMPLATE);
 
     const model = new ChatOpenAI({
-      temperature: 0.2,
+      temperature: 1,
       modelName: "gpt-4-0125-preview",
       openAIApiKey: process.env.OPENAI_API_KEY,
     });

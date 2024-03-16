@@ -6,9 +6,6 @@ import { z } from "zod";
 import { HandIcon, HeartIcon, StarIcon, PlusIcon } from "@radix-ui/react-icons";
 import { cn } from "@/lib/utils";
 import { Loader } from "lucide-react";
-//import { api } from "@/trpc/server";
-//import { unstable_noStore as noStore } from "next/cache";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -29,6 +26,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { useState } from "react";
+import { SearchAvailable } from "@/components/search-available";
+import { SearchNotAvailable } from "@/components/search-not-available";
 
 const emojis = ["🖐", "❤", "⭐", "➕"];
 
@@ -44,6 +43,8 @@ const FormSchema = z.object({
     .refine((value) => value === "AUTO" || value === "MOTO", {
       message: "Vehicle type must be either 'auto' or 'motorcycle'.",
     }),
+
+  state: z.string({ required_error: "Please select a valid option." }),
 
   personalizedPlate: z
     .string()
@@ -76,31 +77,23 @@ type ResponseData = {
   status: number;
 };
 
-export default function SearchForm() {
-  const [res, setRes] = useState<ResponseData | null>(null);
+export function SearchForm() {
+  const [searchResponse, setSearchResponse] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      personalizedPlate: "",
-    },
-  });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsLoading(true);
 
-    //const response = await api.search.searchPlate.query(data);
-    const response: Response = await fetch("/api/search", {
+    const res = await fetch("/api/search", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data, null, 2),
+      body: JSON.stringify(data),
     });
 
-    const resP: ResponseData = (await response.json()) as ResponseData;
-    setRes(resP);
+    const resSearch = (await res.json()) as ResponseData;
+    setSearchResponse(resSearch.message);
 
     toast({
       title: "You submitted the following values:",
@@ -113,12 +106,22 @@ export default function SearchForm() {
     setIsLoading(false);
   }
 
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      personalizedPlate: "",
+      state: "CA",
+      vehicleType: "AUTO",
+    },
+  });
+
   function onClear() {
     form.reset({
       personalizedPlate: "",
+      state: "",
+      vehicleType: "",
     });
   }
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
@@ -137,6 +140,27 @@ export default function SearchForm() {
                 <SelectContent>
                   <SelectItem value="AUTO">Auto</SelectItem>
                   <SelectItem value="MOTO">Motorcycle</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormDescription></FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="state"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>State</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="CA">CA</SelectItem>
                 </SelectContent>
               </Select>
               <FormDescription></FormDescription>
@@ -192,7 +216,7 @@ export default function SearchForm() {
           )}
         />
         <div className="flex justify-center space-x-8">
-          <Button type="submit" className="rounded-3xl">
+          <Button type="submit" className="rounded-3xl" disabled={isLoading}>
             {isLoading ? <Loader className="animate-spin" /> : "Search"}
           </Button>
           <Button
@@ -203,14 +227,18 @@ export default function SearchForm() {
           >
             Clear
           </Button>
-          {res && (
-            <p>
-              The plate is{" "}
-              {res.message === "OK" ? "available" : "not available"}.
-            </p>
-          )}
         </div>
       </form>
+      {searchResponse && (
+        <div>
+          {searchResponse === "OK" ? (
+            <SearchAvailable />
+          ) : (
+            <SearchNotAvailable />
+          )}
+          
+        </div>
+      )}
     </Form>
   );
 }

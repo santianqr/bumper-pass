@@ -7,8 +7,7 @@ import { zodToJsonSchema } from "zod-to-json-schema";
 import { ChatOpenAI } from "@langchain/openai";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { JsonOutputFunctionsParser } from "langchain/output_parsers";
-
-export const runtime = "edge";
+//import { env } from "@/env";
 
 type Body = {
   description: string;
@@ -21,7 +20,7 @@ export async function POST(req: NextRequest) {
     const user_input = body.description;
     const num_ideas = body.num_ideas;
 
-    const TEMPLATE = `Generate ${num_ideas} ideas/shor texts based on a user input, linking all the topics if applicable, and mentioning interesting/curious facts about them.
+    const TEMPLATE = `Generate ${num_ideas} ideas/short texts based on a user input, linking all the topics if applicable, and mentioning interesting/curious facts about them, use dates and related topics.
 
     Input: a user input (a word, a phrase, a sentence, etc.)
     Output: ${num_ideas} ideas (short texts) related to the input, separated by new lines

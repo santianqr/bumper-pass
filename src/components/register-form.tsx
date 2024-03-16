@@ -23,9 +23,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useState } from "react";
+import { toast } from "@/components/ui/use-toast";
+import { api } from "@/trpc/react";
 
 const FormSchema = z
   .object({
@@ -42,9 +42,9 @@ const FormSchema = z
             "Password must have 8 characters, one mayus, one symbol and one number.",
         },
       ),
-    firstName: z.string().min(2, { message: "Type at least 2 characters." }),
+    name: z.string().min(2, { message: "Type at least 2 characters." }),
     state: z.string({ required_error: "Please select a valid option." }),
-    unitNumber: z.string().optional(),
+    unit: z.string().optional(),
     vin: z
       .string({ required_error: "Must be just numbers." })
       .min(3, { message: "Type just 3 numbers." })
@@ -63,38 +63,45 @@ const FormSchema = z
       .min(2, { message: "Type at least 2 characters." })
       .max(7, { message: "Type at most 7 characters." }),
     lastName: z.string().min(2, { message: "Type at least 2 characters." }),
-    numberNameStreet: z
-      .string()
-      .min(2, { message: "Type at least 2 characters." }),
-    terms: z.boolean({
-      required_error: "Please accept the terms and conditions.",
-    }),
-    suscribe: z.boolean().optional(),
+    street: z.string().min(2, { message: "Type at least 2 characters." }),
+    terms: z.boolean().default(false),
+    suscribe: z.boolean().default(true),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords must match.",
     path: ["confirmPassword"],
+  })
+  .refine((data) => data.terms === true, {
+    message: "Please accept the terms and conditions.",
+    path: ["terms"],
   });
 
-export default function SignUp() {
-  const [loading, setLoading] = useState(false);
-
+export function RegisterForm() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {},
+    defaultValues: {
+      state: "ca",
+      suscribe: false,
+      terms: true,
+    },
+  });
+
+  const createAccount = api.func.createAccount.useMutation({
+    onSuccess: (data) => {
+      toast({
+        title: "You submitted the following values:",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+          </pre>
+        ),
+      });
+    },
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    setLoading(true);
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
-    setLoading(false);
+    const res = createAccount.mutate(data);
+    console.log(res);
   }
 
   return (
@@ -103,7 +110,7 @@ export default function SignUp() {
         className="space-y-6 bg-right-top bg-no-repeat"
         style={{
           backgroundImage: "url('/bp_logo_gray.webp')",
-          backgroundSize: "150px 150px",
+          backgroundSize: "300px 300px",
         }}
       >
         <div>
@@ -133,6 +140,21 @@ export default function SignUp() {
             />
             <FormField
               control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone Number</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormDescription></FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div></div>
+            <FormField
+              control={form.control}
               name="password"
               render={({ field }) => (
                 <FormItem>
@@ -147,10 +169,53 @@ export default function SignUp() {
             />
             <FormField
               control={form.control}
-              name="firstName"
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirm password*</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="password" />
+                  </FormControl>
+                  <FormDescription></FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div></div>
+            <FormField
+              control={form.control}
+              name="name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>First Name*</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormDescription></FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="middleName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Middle Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormDescription></FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="lastName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Last Name*</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -185,80 +250,38 @@ export default function SignUp() {
             />
             <FormField
               control={form.control}
-              name="unitNumber"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Apartment/Unit Number</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormDescription></FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="vin"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>3 Last digits of VIN*</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormDescription></FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Phone Number</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormDescription></FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Confirm password*</FormLabel>
-                  <FormControl>
-                    <Input {...field} type="password" />
-                  </FormControl>
-                  <FormDescription></FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="middleName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Middle Name</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormDescription></FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
               name="city"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>City*</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormDescription></FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="street"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Number & Name Street*</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormDescription></FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="unit"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Apartment/Unit Number</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -281,40 +304,27 @@ export default function SignUp() {
                 </FormItem>
               )}
             />
+            <div></div>
+            <FormField
+              control={form.control}
+              name="vin"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>3 Last digits of VIN*</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormDescription></FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="currentPlate"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Current Plate*</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormDescription></FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="lastName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Last Name*</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormDescription></FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="numberNameStreet"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Number & Name Street*</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -374,8 +384,13 @@ export default function SignUp() {
           <Button
             type="submit"
             className="self-end rounded-3xl bg-[#E62534] hover:bg-[#E62534]/90"
+            disabled={createAccount.isLoading}
           >
-            {loading ? <Loader className="animate-spin" /> : "Register"}
+            {createAccount.isLoading ? (
+              <Loader className="animate-spin" />
+            ) : (
+              "Register"
+            )}
           </Button>
         </form>
       </div>

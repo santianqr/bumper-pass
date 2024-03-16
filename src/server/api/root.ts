@@ -1,4 +1,4 @@
-import { searchRouter } from "@/server/api/routers/search";
+import { funcRouter } from "@/server/api/routers/func";
 import { createTRPCRouter } from "@/server/api/trpc";
 
 /**
@@ -7,7 +7,7 @@ import { createTRPCRouter } from "@/server/api/trpc";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  search: searchRouter,
+  func: funcRouter,
 });
 
 // export type definition of API

@@ -5,7 +5,8 @@ import { cn } from "@/lib/utils";
 import { TRPCReactProvider } from "@/trpc/react";
 import { Toaster } from "@/components/ui/toaster";
 import Header from "@/components/header";
-import Footer from "@/components/footer";
+import { Footer } from "@/components/footer";
+import { getServerAuthSession } from "@/server/auth";
 
 const fontMaven = Maven_Pro({
   subsets: ["latin"],
@@ -24,24 +25,26 @@ export const metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getServerAuthSession();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          "relative flex min-h-screen flex-col bg-background font-maven antialiased",
+          "flex min-h-screen flex-col justify-between bg-background font-sans antialiased",
           fontMaven.variable,
         )}
       >
         <TRPCReactProvider>
-            <Header />
-            {children}
-            <Toaster />
-            <Footer />
+          {session ? <Header /> : null}
+          <div className="mx-auto w-full max-w-screen-xl">{children}</div>
+          {session ? <Footer /> : null}
+          <Toaster />
         </TRPCReactProvider>
       </body>
     </html>
